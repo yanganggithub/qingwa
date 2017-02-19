@@ -39,15 +39,15 @@ export default  class Main extends Component{
     render() {
 
         return (
-            <TabNavigator>
+            <TabNavigator tabBarStyle={styles.tabStyle}>
                 {/*--首页--*/}
-                {this.renderTabBarItem('首页', 'icon_tabbar_homepage', 'icon_tabbar_homepage_selected','home', '首页', Home)}
+                {this.renderTabBarItem('首页', 'tab_home', 'tab_home_current','home', '首页', Home)}
                 {/*--商家--*/}
-                {this.renderTabBarItem('频道', 'icon_tabbar_merchant_normal', 'icon_tabbar_merchant_selected','channel', '频道', Channel)}
+                {this.renderTabBarItem('频道', 'tab_type', 'tab_type_current','channel', '频道', Channel)}
                 {/*--我的--*/}
-                {this.renderTabBarItem('排行', 'icon_tabbar_mine', 'icon_tabbar_mine_selected','rank', '排行', Rank)}
+                {this.renderTabBarItem('排行', 'tab_top', 'tab_top_current','rank', '排行', Rank)}
                 {/*--更多--*/}
-                {this.renderTabBarItem('我的', 'icon_tabbar_misc', 'icon_tabbar_misc_selected','me', '我的', Me)}
+                {this.renderTabBarItem('我的', 'tab_me', 'tab_me_current','me', '我的', Me)}
             </TabNavigator>
         );
     }
@@ -87,12 +87,16 @@ export default  class Main extends Component{
 
 const styles = StyleSheet.create({
     iconStyle:{
-        width: Platform.OS === 'ios' ? 30 : 25,
-        height:Platform.OS === 'ios' ? 30 : 25
+        width: Platform.OS === 'ios' ? 20 : 25,
+        height:Platform.OS === 'ios' ? 20 : 25
     },
 
     selectedTitleStyle:{
-        color:'orange'
+        color:'#262626'
+    },
+    tabStyle:{
+        height:49,
+        alignItems:'center'
     }
 });
 

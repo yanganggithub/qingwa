@@ -62,13 +62,11 @@ export default class ContentLIstCell extends Component{
             <View style={styles.cellStyle}>
                 <Image source={{uri: rowdata.pic}} style={{width:imgW, height:imgH}}/>
                 <View style={styles.titleStyle}>
-                    <Text >{rowdata.title}</Text>
+                    <Text style={{fontSize:12,color:'#ffffff'}}>{rowdata.title+' '}</Text>
                 </View>
                 <View style={styles.bottomViewStyle}>
-                    <Text style={{fontSize:13}}>{rowdata.name}</Text>
+                    <Text style={{fontSize:13,textAlign: 'center',color:'#262626'}}>{rowdata.name}</Text>
                 </View>
-
-
 
             </View>
 
@@ -108,10 +106,10 @@ const styles = StyleSheet.create({
         height:20,
         backgroundColor:'rgba(0,0,0,0.6)',
         justifyContent:'center',
-        alignItems:'center',
+        alignItems:'flex-end',
         // 定位
         position:'absolute',
-        bottom:44,
+        bottom:44
 
     },
     cellStyle:{

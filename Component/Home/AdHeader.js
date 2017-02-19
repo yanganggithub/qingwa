@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import Dimensions from'Dimensions';
+import CateView from'./CateView.js'
 var {width} = Dimensions.get('window');
 
 
@@ -80,6 +81,9 @@ export default class AdHeader extends Component{
                   </View>
 
               </View>
+              <CateView/>
+
+
 
 
            
@@ -225,7 +229,7 @@ const styles = StyleSheet.create({
 
       // 定位
       position:'absolute',
-      bottom:0,
+      bottom:80,
 
       // 设置主轴的方向
       flexDirection:'row',

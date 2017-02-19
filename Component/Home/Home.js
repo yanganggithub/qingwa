@@ -46,11 +46,17 @@ export default class Home extends Component{
     render() {
 
         return (
+
+        <View style={styles.container}>
+            {/*导航*/}
+            {this.renderNavBar()}
             <ListView
+                style={styles.listStyle}
                 dataSource={this.state.dataSource}
                 renderRow={this.renderRow.bind(this)}
                 renderHeader={this.renderHeader.bind(this)}
             />
+        </View>
 
         );
     }
@@ -101,9 +107,10 @@ export default class Home extends Component{
     // 单独的一个cell
     renderRow(rowData){
         return(
-            <TouchableOpacity activeOpacity={0.5}>
+            <View >
+               <View style={styles.topStyle}></View>
                <ContentListCell dataArr={rowData}></ContentListCell>
-            </TouchableOpacity>
+            </View>
         );
     }
 
@@ -117,6 +124,24 @@ export default class Home extends Component{
                 imageDataArr = {this.state.headerDataArr}
             />
         );
+    }
+
+    // 导航条
+    renderNavBar(){
+        return(
+            <View style={styles.navOutViewStyle}>
+                <TouchableOpacity  style={styles.leftViewStyle}>
+                    <Image source={{uri: 'nav_search'}} style={styles.navImageStyle}/>
+                </TouchableOpacity>
+                <View style={styles.txtStyle}>
+                    <Text style={{color:'white', fontSize:18, fontWeight:'bold'}}>咕噜影院</Text>
+                </View>
+
+                <TouchableOpacity onPress={()=>{alert('点了!')}} style={styles.rightViewStyle}>
+                    <Image source={{uri: 'nav_record'}} style={styles.navImageStyle}/>
+                </TouchableOpacity>
+            </View>
+        )
     }
 
 
@@ -133,7 +158,47 @@ const styles = StyleSheet.create({
 
     selectedTitleStyle:{
         color:'orange'
+    },
+    navOutViewStyle:{
+        height: Platform.OS == 'ios' ? 64 : 44,
+        backgroundColor:'rgba(17,17,17,1.0)',
+
+        // 设置主轴的方向
+        flexDirection:'row',
+
+        // 主轴方向居中
+        justifyContent:'center'
+    },
+    leftViewStyle:{
+        // 绝对定位
+        position:'absolute',
+        left:10,
+        bottom:Platform.OS == 'ios' ? 15:13
+    },
+
+    navImageStyle:{
+        width:Platform.OS == 'ios' ? 24: 24,
+        height:Platform.OS == 'ios' ? 24: 24,
+    },
+
+    rightViewStyle:{
+        // 绝对定位
+        position:'absolute',
+        right:10,
+        bottom:Platform.OS == 'ios' ? 15:13
+    },
+    txtStyle:{
+        marginTop:30
+
+    },
+    listStyle:{
+        marginBottom:Platform.OS == 'ios' ? 64 :44
+    },
+    topStyle:{
+        height:10,
+        backgroundColor:'rgba(237,237,237,1.0)'
     }
+
 });
 
 
