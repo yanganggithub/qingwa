@@ -16,7 +16,8 @@ import {
     Platform,   // 判断当前运行的系统
     ListView,
     TouchableOpacity,
-    Navigator
+    Navigator,
+    ActivityIndicator
 } from 'react-native';
 
 
@@ -24,6 +25,11 @@ import {
 
 import AdHeader from '../Home/AdHeader';
 import ContentListCell from '../Home/ContentListCell'
+
+import Dimensions from'Dimensions';
+var {width,height} = Dimensions.get('window');
+
+
 
 
 export default class Home extends Component{
@@ -35,6 +41,8 @@ export default class Home extends Component{
         this.state = {
              headerDataArr: [],
 
+             animating: true,
+
             // cell的数据源
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2
@@ -44,18 +52,31 @@ export default class Home extends Component{
     }
 
     render() {
-
+        console.log(height);
         return (
 
+
         <View style={styles.container}>
+
+            <View  style={{bottom:0,width:width,height:height ,position:'absolute'}}>
+                <ActivityIndicator
+                    animating={this.state.animating}
+                    style={{marginTop:height/2.0,height:80}}
+                    size="small" />
+            </View>
+
             {/*导航*/}
             {this.renderNavBar()}
+
             <ListView
                 style={styles.listStyle}
                 dataSource={this.state.dataSource}
                 renderRow={this.renderRow.bind(this)}
                 renderHeader={this.renderHeader.bind(this)}
             />
+
+
+
         </View>
 
         );
@@ -96,6 +117,7 @@ export default class Home extends Component{
         // 更新状态机
         this.setState({
             // ListView头部的数据源
+            animating:false,
             headerDataArr: headerArr,
             // cell的数据源
             dataSource: this.state.dataSource.cloneWithRows(listDataArr)
@@ -151,6 +173,10 @@ export default class Home extends Component{
 
 
 const styles = StyleSheet.create({
+    container:{
+        flex:1,
+    },
+
     iconStyle:{
         width: Platform.OS === 'ios' ? 30 : 25,
         height:Platform.OS === 'ios' ? 30 : 25
@@ -191,13 +217,11 @@ const styles = StyleSheet.create({
         marginTop:30
 
     },
-    listStyle:{
-        marginBottom:Platform.OS == 'ios' ? 64 :44
-    },
     topStyle:{
         height:10,
         backgroundColor:'rgba(237,237,237,1.0)'
-    }
+    },
+
 
 });
 
