@@ -186,14 +186,13 @@ class VideoList extends Component {
 
     loadDataFromNet(page){
         console.log('type=',this.props.type);
-
+        let formData = new FormData();
+        formData.append("type",this.props.type);
+        formData.append("page",page);
 
         fetch(this.props.api_url,{
             method: 'POST',
-            body: JSON.stringify({
-                type: this.props.type,
-                page: page
-            })
+            body: formData
         })
             .then((response)=>response.json())
             .then((responseData)=>{
@@ -382,7 +381,7 @@ const styles = StyleSheet.create({
 
     loadingMore:{
 
-        marginVertical:20
+        marginVertical:10
     },
 
     container: {
@@ -457,8 +456,8 @@ const styles = StyleSheet.create({
         marginBottom:2
     },
     loadingText:{
-        fontSize:18,
-        color:'red',
+        fontSize:13,
+        color:'gray',
         textAlign:'center'
     },
 
