@@ -21,6 +21,8 @@ import {
 } from 'react-native';
 
 import Dimensions from'Dimensions';
+import request from '../Common/request';
+import config from '../Common/config';
 var {width,height} = Dimensions.get('window');
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import {PullList} from 'react-native-pull';
@@ -189,21 +191,23 @@ class VideoList extends Component {
         let formData = new FormData();
         formData.append("type",this.props.type);
         formData.append("page",page);
-
-        fetch(this.props.api_url,{
-            method: 'POST',
-            body: formData
-        })
-            .then((response)=>response.json())
-            .then((responseData)=>{
-                // 拿到所有的数据
+        console.log(config.api.base + 'top');
+        request.post(config.api.base + 'top',{
+            type:this.props.type,
+            page:page
+        }).then(
+            (responseData)=>{
                 var jsonData = responseData['data'];
                 // 处理网络数据
-                this.dealWithData(jsonData);
-            })
-            .catch((error)=>{
-                 this.cachedResults.nextPage--;
-            })
+               this.dealWithData(jsonData);
+            }
+        ).catch(
+            (err) => {
+                console.log(err);
+                this.cachedResults.nextPage--;
+            }
+        )
+
 
     }
 
