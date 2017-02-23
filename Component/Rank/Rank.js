@@ -17,12 +17,15 @@ import {
     Navigator,
     TouchableOpacity,
     ListView,
-    ActivityIndicator
+    ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 
 import Dimensions from'Dimensions';
 import request from '../Common/request';
 import config from '../Common/config';
+import VideoDetail from '../VideoDetail/VideoDetail';
+
 var {width,height} = Dimensions.get('window');
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import {PullList} from 'react-native-pull';
@@ -52,7 +55,7 @@ export default class Rank extends Component{
                     tabBarInactiveTextColor='#262626'
                     tabBarTextStyle={{fontSize: 14}}
                     >
-                    <VideoList tabLabel="电影"  type="1"/>
+                    <VideoList tabLabel="电影"  type="1" navigator={this.props.navigator}/>
                     <VideoList tabLabel="电视剧" type="2"/>
                     <VideoList tabLabel="综艺" type="3"/>
                     <VideoList tabLabel="动漫" type="4"/>
@@ -111,7 +114,8 @@ class VideoList extends Component {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2
             }),
-            isLoading:false
+            isLoading:false,
+            isRefreshing:false
         };
     }
 
@@ -129,12 +133,35 @@ class VideoList extends Component {
                 onEndReached={this.loadMoreData}
                 onEndReachedThreshold={20}
                 renderFooter={this.renderFooter}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.onRefresh}
+
+                    />
+                }
             />
 
 
 
 
         );
+    }
+
+    //下拉刷新的回调   从服务器获取最新的数据
+    onRefresh=()=>{
+
+        if( this.state.isRefreshing) {
+            return
+        }
+
+        this.setState({
+            isRefreshing:true
+        });
+        this.loadDataFromNet(1);
+
+
+
     }
 
     renderFooter=()=>{
@@ -199,7 +226,7 @@ class VideoList extends Component {
             (responseData)=>{
                 var jsonData = responseData['data'];
                 // 处理网络数据
-               this.dealWithData(jsonData);
+               this.dealWithData(jsonData,page);
             }
         ).catch(
             (err) => {
@@ -212,7 +239,11 @@ class VideoList extends Component {
     }
 
     // 处理网络数据
-    dealWithData(jsonData){
+    dealWithData(jsonData,page){
+
+        if (page == 1){
+            this.cachedResults.items.splice(0,this.cachedResults.items.length);
+        }
        let items = this.cachedResults.items.slice();
        items = this.cachedResults.items.concat(jsonData['top_list']);
        this.cachedResults.items = items;
@@ -222,7 +253,8 @@ class VideoList extends Component {
         this.setState({
             isLoading:false,
             // cell的数据源
-            dataSource: this.state.dataSource.cloneWithRows(this.cachedResults.items)
+            dataSource: this.state.dataSource.cloneWithRows(this.cachedResults.items),
+            isRefreshing:false
         });
 
         // console.log(headerArr, listDataArr);
@@ -230,7 +262,18 @@ class VideoList extends Component {
 
     renderRow(rowData){
         return(
-            <TouchableOpacity onPress={()=>alert(0)}>
+            <TouchableOpacity onPress={()=>{
+                const { navigator } = this.props;
+                //为什么这里可以取得 props.navigator?请看上文:
+                //<Component {...route.params} navigator={navigator} />
+                //这里传递了navigator作为props
+                if (navigator) {
+                    navigator.push({
+                        name: '详情页面',
+                        component: VideoDetail,
+                    })
+                }
+            } }>
                 <View style={styles.listViewStyle}>
                     {/*左边*/}
                     <Image source={{uri:rowData.pic}} style={styles.imageViewStyle}/>
@@ -390,8 +433,6 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        flexDirection: 'column',
-        backgroundColor: '#F5FCFF',
     },
 
     lineStyle:{

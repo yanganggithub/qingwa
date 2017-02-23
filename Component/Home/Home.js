@@ -54,8 +54,6 @@ export default class Home extends Component{
     render() {
         console.log(height);
         return (
-
-
         <View style={styles.container}>
 
             <View  style={{bottom:0,width:width,height:height ,position:'absolute'}}>
@@ -74,9 +72,6 @@ export default class Home extends Component{
                 renderRow={this.renderRow.bind(this)}
                 renderHeader={this.renderHeader.bind(this)}
             />
-
-
-
         </View>
 
         );
