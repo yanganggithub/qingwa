@@ -37,7 +37,6 @@ export default class Home extends Component{
 
         super(props);
 
-
         this.state = {
              headerDataArr: [],
 
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
         bottom:Platform.OS == 'ios' ? 15:13
     },
     txtStyle:{
-        marginTop:30
+        marginTop:Platform.OS == 'ios' ? 30 : 10
 
     },
     topStyle:{

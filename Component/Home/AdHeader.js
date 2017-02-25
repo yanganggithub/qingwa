@@ -109,7 +109,6 @@ export default class AdHeader extends Component{
             // console.log(imgItem);
             // debugger;
             // 创建组件装入数组
-            console.log(imgItem.pic);
             allImage.push(
                 <Image key={i} source={{uri: imgItem.pic}} style={{width:width, height:140}}/>
             );

@@ -56,9 +56,9 @@ export default class Rank extends Component{
                     tabBarTextStyle={{fontSize: 14}}
                     >
                     <VideoList tabLabel="电影"  type="1" navigator={this.props.navigator}/>
-                    <VideoList tabLabel="电视剧" type="2"/>
-                    <VideoList tabLabel="综艺" type="3"/>
-                    <VideoList tabLabel="动漫" type="4"/>
+                    <VideoList tabLabel="电视剧" type="2" navigator={this.props.navigator}/>
+                    <VideoList tabLabel="综艺" type="3" navigator={this.props.navigator}/>
+                    <VideoList tabLabel="动漫" type="4" navigator={this.props.navigator}/>
 
                    
                 </ScrollableTabView>
@@ -118,12 +118,6 @@ class VideoList extends Component {
             isRefreshing:false
         };
     }
-
-
-
-
-
-
 
     render() {
         return(
@@ -214,10 +208,7 @@ class VideoList extends Component {
     }
 
     loadDataFromNet(page){
-        console.log('type=',this.props.type);
-        let formData = new FormData();
-        formData.append("type",this.props.type);
-        formData.append("page",page);
+
         console.log(config.api.base + 'top');
         request.post(config.api.base + 'top',{
             type:this.props.type,
@@ -264,13 +255,12 @@ class VideoList extends Component {
         return(
             <TouchableOpacity onPress={()=>{
                 const { navigator } = this.props;
-                //为什么这里可以取得 props.navigator?请看上文:
-                //<Component {...route.params} navigator={navigator} />
-                //这里传递了navigator作为props
+
                 if (navigator) {
                     navigator.push({
                         name: '详情页面',
                         component: VideoDetail,
+                        params:rowData
                     })
                 }
             } }>

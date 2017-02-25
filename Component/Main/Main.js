@@ -45,7 +45,7 @@ export default  class Main extends Component{
             }}
             renderScene={(route,navigator)=> {
                 if(route.component){
-                    return <route.component route={route} navigator={navigator} />
+                    return <route.component {...route.params} navigator={navigator} />
                 }
             }
 
