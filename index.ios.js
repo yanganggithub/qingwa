@@ -18,8 +18,20 @@ import Main from './Component/Main/Main'
 
 
 
+
+  global.console = {
+    info: () => {},
+    log: () => {},
+    warn: () => {},
+    error: () => {},
+  };
+
+
+
 export default class qingwa extends Component {
   render() {
+
+
     
     return (
       <Main/>

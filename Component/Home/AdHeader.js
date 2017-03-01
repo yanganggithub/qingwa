@@ -66,6 +66,7 @@ export default class AdHeader extends Component{
                  onScrollEndDrag={this.onScrollEndDrag.bind(this)}
 
 
+
              >
 
                   {this.renderAllImage()}

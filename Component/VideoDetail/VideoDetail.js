@@ -16,13 +16,19 @@ import {
     Platform,   // 判断当前运行的系统
     Navigator,
     ListView,
-    TouchableOpacity
+    Modal,
+    TouchableOpacity,
+    ScrollView,
+    PixelRatio
 } from 'react-native';
 
 
 import request from '../Common/request';
 import config from '../Common/config';
+import VideoHeader from '../VideoDetail/VideoHeader'
+import VideoFooter from '../VideoDetail/VideoFooter'
 
+import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Dimensions from'Dimensions';
 var {width,height} = Dimensions.get('window');
 
@@ -32,11 +38,17 @@ export default class VideoDetail extends Component{
         super(props);
         this.state = {
             headerDataDic:null,
-            // cell的数据源
+            footerDataDic:null,
+            animationType: 'none',//none slide fade
+            modalVisible: false,//模态场景是否可见
+            transparent: true,//是否透明显示
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2
             })
+
+
         };
+        
 
     }
 
@@ -48,15 +60,169 @@ export default class VideoDetail extends Component{
 
                 {/*导航*/}
                 {this.renderNavBar()}
+
+
                 <ListView
+                    ref="listView"
                     style={styles.listStyle}
                     dataSource={this.state.dataSource}
+                    bounces={false}
                     renderRow={this.renderRow.bind(this)}
                     renderHeader={this.renderHeader.bind(this)}
+                    onScrollEndDrag={(e)=>this.scrollEnd(e)}
                 />
+
+
+
+                {/*<ScrollView>*/}
+
+                    {/*<VideoHeader  headerDataDic={this.state.headerDataDic}>*/}
+
+                    {/*</VideoHeader>*/}
+
+                    {/*<VideoFooter style={styles.rowStyle} footerDataDic={this.state.footerDataDic}>*/}
+
+                    {/*</VideoFooter>*/}
+
+
+                {/*</ScrollView>*/}
             </View>
 
         );
+    }
+
+    scrollEnd(e){
+
+        var offset =  e.nativeEvent.contentOffset.y;
+        console.log("offset=",offset);
+        if (offset>=134){
+            console.log("可以滑动了");
+            console.log(this.similar);
+            this.similar.makeScroll();
+        }
+    }
+
+    startShow=()=>{
+        alert('开始显示了');
+    }
+
+    renderHeader(){
+        if (!this.state.headerDataDic) return <View></View>;
+        console.log('返回视图');
+        return(
+            <View style={styles.headViewStyle}>
+                {/*左边*/}
+                <Image source={{uri:this.state.headerDataDic.pic}} style={styles.imageViewStyle}/>
+                {/*右边*/}
+
+                <View style={styles.rightContentStyle}>
+
+
+                    <View style={styles.contentStyle}>
+                        <Text style={{color:'white',fontSize:12}}>类型: {this.state.headerDataDic.keywords}</Text>
+
+                    </View>
+                    <View style={styles.contentStyle}>
+                        <Text style={{color:'white',fontSize:12}}>地区: {this.state.headerDataDic.area}</Text>
+                    </View>
+
+                    <View style={styles.contentStyle}>
+                        <Text style={{color:'white',fontSize:12}}>年份: {this.state.headerDataDic.year}</Text>
+                    </View>
+
+                    <View style={styles.contentStyle}>
+                        <Text style={{color:'white',fontSize:12}}  onPress={this.originAction.bind(this)}>来源: {this.state.headerDataDic.vod_url_list[0].origin.name}</Text>
+                    </View>
+
+
+                </View>
+            </View>
+
+        );
+    }
+
+    originAction(){
+        console.log('originAction');
+        let modalBackgroundStyle = {
+            backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
+        };
+
+        let innerContainerTransparentStyle = this.state.transparent
+            ? { backgroundColor: '#fff', padding: 20 }
+            : null;
+
+        <View style={{ alignItems: 'center', flex: 1 }}>
+            <Modal
+                animationType={this.state.animationType}
+                transparent={this.state.transparent}
+                visible={this.state.modalVisible}
+                onRequestClose={() => { this.setModalVisible(false) } }
+                onShow={this.startShow}
+            >
+                <View style={[styles.container, modalBackgroundStyle]}>
+                    <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
+                        <Text style={styles.date}>2016-08-11</Text>
+                        <View style={styles.row}>
+                            <View >
+                                <Text style={styles.station}>长沙站</Text>
+                                <Text style={styles.mp10}>8: 00出发</Text>
+                            </View>
+                            <View>
+                                <View style={styles.at}></View>
+                                <Text style={[styles.mp10, { textAlign: 'center' }]}>G888</Text>
+                            </View>
+                            <View >
+                                <Text style={[styles.station, { textAlign: 'right' }]}>北京站</Text>
+                                <Text style={[styles.mp10, { textAlign: 'right' }]}>18: 00抵达</Text>
+                            </View>
+                        </View>
+                        <View style={styles.mp10}>
+                            <Text>票价：￥600.00元</Text>
+                            <Text>乘车人：东方耀</Text>
+                            <Text>长沙站 火车南站 网售</Text>
+                        </View>
+                        <View style={[styles.mp10, styles.btn, { alignItems: 'center' }]}>
+                            <Text style={styles.btn_text}>去支付</Text>
+                        </View>
+                        <Text
+                            onPress={this.setModalVisible.bind(this,false) }
+                            style={{fontSize:20,marginTop:10}}>
+                            关闭
+                        </Text>
+                    </View>
+                </View>
+            </Modal>
+
+            <Text style={{ fontSize: 30,color:'red' }}  onPress={this.setModalVisible.bind(this, true) }>预定火车票</Text>
+
+
+        </View>
+
+    }
+
+    setModalVisible = (visible) => {
+        this.setState({ modalVisible: visible });
+    }
+
+
+    renderRow(rowData){
+        return(
+            <View style={styles.rowStyle}>
+                <ScrollableTabView
+                    tabBarUnderlineColor='#FF0000'
+                    tabBarUnderlineStyle={styles.lineStyle}
+                    tabBarActiveTextColor='#00ae54'
+                    tabBarInactiveTextColor='#262626'
+                    tabBarTextStyle={{fontSize: 14}}
+                >
+
+                    <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar} }data={rowData['near_list']} />
+                    <CommentList tabLabel="影评"  data={rowData['comment_list']} navigator={this.props.navigator}/>
+                    <BriefList tabLabel="简介" data={rowData['content']} navigator={this.props.navigator}/>
+
+                </ScrollableTabView>
+            </View>
+        )
     }
 
     // 请求网络数据
@@ -73,9 +239,9 @@ export default class VideoDetail extends Component{
         }).then(
             (responseData)=>{
                 console.log(responseData);
-                var jsonData = responseData['data'];
+
                 // 处理网络数据
-                this.dealWithData(jsonData);
+                this.dealWithData(responseData);
             }
         ).catch(
             (err) => {
@@ -91,55 +257,18 @@ export default class VideoDetail extends Component{
     }
 
 
-    dealWithData(jsonData) {
+    dealWithData(responseData) {
+        var jsonData = responseData['data'];
+        var listDataArr = [];
+        listDataArr.push(jsonData);
+
         this.setState(
             {
-                headerDataDic:jsonData
+                footerDataDic:jsonData,
+                headerDataDic:jsonData,
+                dataSource :this.state.dataSource.cloneWithRows(listDataArr)
+
             }
-
-        );
-    }
-    // 单独的一个cell
-    renderRow(rowData){
-        return(
-             <View></View>
-
-        );
-    }
-
-    // 头部
-    renderHeader(){
-        // 判断
-
-        if (!this.state.headerDataDic) return;
-
-        return(
-            <View style={styles.headViewStyle}>
-                {/*左边*/}
-                <Image source={{uri:this.state.headerDataDic.pic}} style={styles.imageViewStyle}/>
-                {/*右边*/}
-
-                <View style={styles.rightContentStyle}>
-
-                    <View style={styles.contentStyle}>
-                        <Text>{this.state.headerDataDic.keywords}</Text>
-
-                    </View>
-                    <View style={styles.contentStyle}>
-                        <Text style={{color:'gray'}}>{this.state.headerDataDic.area}</Text>
-                    </View>
-
-                    <View style={styles.contentStyle}>
-                        <Text style={{color:'gray'}}>{this.state.headerDataDic.year}</Text>
-                    </View>
-
-                    <View style={styles.contentStyle}>
-                        <Text style={{color:'gray'}}>{this.state.headerDataDic.actor}</Text>
-                    </View>
-
-
-                </View>
-            </View>
 
         );
     }
@@ -170,29 +299,134 @@ export default class VideoDetail extends Component{
 
 }
 
+class SimilarList extends Component {
+    constructor(props) {
+        super(props);
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.state = {
+            scrollVar:false,
+            // cell的数据源
+            dataSource: ds.cloneWithRows(this.props.data)
+
+        }
+        this.renderSimilarRow= this.renderSimilarRow.bind(this);
+
+    }
+
+    makeScroll(){
+        this.setState({
+            scrollVar:true
+        });
+    }
+
+    unEnabledScroll(){
+        this.setState({
+            scrollVar:false
+        });
+    }
+
+    render(){
+        return(
+            <ListView
+                ref="listView"
+                dataSource={this.state.dataSource}
+                renderRow={this.renderSimilarRow}
+                onScrollEndDrag={(e)=>this.scrollEnd(e)}
+                    scrollEnabled={this.state.scrollVar}
+            />
+        )
+    }
+
+    scrollEnd(e){
+
+        var offset =  e.nativeEvent.contentOffset.y;
+
+        if (offset<0){
+
+
+           // this.unEnabledScroll();
+        }
+
+    }
+
+    renderSimilarRow(rowData){
+
+        return(
+            <TouchableOpacity onPress={()=>{
+                const { navigator } = this.props;
+
+                if (navigator) {
+                    navigator.push({
+                        name: '详情页面',
+                        component: VideoDetail,
+                        params:rowData
+                    })
+                }
+            } }>
+                <View style={styles.listViewStyle}>
+                    {/*左边*/}
+                    <Image source={{uri:rowData.pic}} style={styles.imageViewStyle}/>
+                    {/*右边*/}
+
+                    <View style={styles.rightContentStyle}>
+
+                        <View style={styles.rightTopViewStyle}>
+                            <Text>{rowData.title}</Text>
+
+                        </View>
+                        <View style={styles.areaStyle}>
+                            <Text style={{color:'gray'}}>{rowData.area}</Text>
+                        </View>
+
+                        <Text style={{color:'gray'}}>{rowData.actor}</Text>
+
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+}
+
+class CommentList extends Component {
+    constructor(props) {
+        super(props);
+
+    }
+
+    render(){
+        return(
+            <View>
+                <Text>评论</Text>
+            </View>
+        )
+    }
+}
+
+class BriefList extends Component {
+    constructor(props) {
+        super(props);
+
+    }
+
+    render() {
+        return (
+            <View>
+                <Text>简介</Text>
+            </View>
+        )
+    }
+
+}
+
 
 const styles = StyleSheet.create({
+
+
     container:{
         flex:1,
         backgroundColor:'rgba(255,255,255,1)'
     },
-    headViewStyle:{
-        backgroundColor:'rgba(0,0,0,0.6)',
-        padding:14,
-        flexDirection:'row'
-    },
-    imageViewStyle:{
-        width:130,
-        height:173
-    },
-    rightContentStyle:{
-        marginLeft:14,
-        width:width - 130 - 14 * 2 - 14,
 
-    },
-    contentStyle:{
-        marginTop:3
-    },
     navOutViewStyle:{
         height: Platform.OS == 'ios' ? 64 : 44,
         backgroundColor:'rgba(17,17,17,1.0)',
@@ -224,7 +458,143 @@ const styles = StyleSheet.create({
 
     txtStyle:{
          marginTop:Platform.OS == 'ios' ? 30 : 10
-    }
+    },
+    lineStyle:{
+        backgroundColor:'#00ae54'
+    },
+    cellStyle:{
+        width:width,
+        height:height -  Platform.OS == 'ios' ? 64 : 44
+    },
+
+    headViewStyle:{
+        backgroundColor:'rgba(0,0,0,0.6)',
+        padding:14,
+        flexDirection:'row'
+    },
+    imageViewStyle:{
+        width:130,
+        height:173
+    },
+    rightContentStyle:{
+        marginLeft:14,
+        width:width - 130 - 14 * 2 - 14,
+
+    },
+    contentStyle:{
+        marginTop:3
+    },
+
+    listViewStyle:{
+        backgroundColor:'white',
+        padding:14,
+        borderBottomColor:'#e5e5e5',
+        borderBottomWidth:0.5,
+
+        flexDirection:'row'
+    },
+
+    imageViewStyle:{
+        width:80,
+        height:106
+    },
+
+    rightContentStyle:{
+        marginLeft:13,
+        width:width - 80 - 14 * 2 - 13,
+
+    },
+
+    rightTopViewStyle:{
+        marginTop:3
+    },
+    areaStyle:{
+        marginTop:7,
+        marginBottom:2
+    },
+
+    rowStyle:{
+        width:width,
+        height:height - 64
+    },
+    innerContainer: {
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    row: {
+        alignItems: 'center',
+
+        flex: 1,
+        flexDirection: 'row',
+        marginBottom: 20,
+    },
+    rowTitle: {
+        flex: 1,
+        fontWeight: 'bold',
+    },
+    button: {
+        borderRadius: 5,
+        flex: 1,
+        height: 44,
+        alignSelf: 'stretch',
+        justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    buttonText: {
+        fontSize: 18,
+        margin: 5,
+        textAlign: 'center',
+    },
+
+    page: {
+        flex: 1,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: 0,
+    },
+    zhifu: {
+        height: 150,
+    },
+
+    flex: {
+        flex: 1,
+    },
+    at: {
+        borderWidth: 1 / PixelRatio.get(),
+        width: 80,
+        marginLeft:10,
+        marginRight:10,
+        borderColor: '#18B7FF',
+        height: 1,
+        marginTop: 10
+
+    },
+    date: {
+        textAlign: 'center',
+        marginBottom: 5
+    },
+    station: {
+        fontSize: 20
+    },
+    mp10: {
+        marginTop: 5,
+    },
+    btn: {
+        width: 60,
+        height: 30,
+        borderRadius: 3,
+        backgroundColor: '#FFBA27',
+        padding: 5,
+    },
+    btn_text: {
+        lineHeight: 18,
+        textAlign: 'center',
+        color: '#fff',
+    },
+
+
 
 
 });
