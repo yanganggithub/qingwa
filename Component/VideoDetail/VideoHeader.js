@@ -23,21 +23,17 @@ export default class VideoDetail extends Component{
         super(props);
 
         this.state = {
-
             animationType: 'none',//none slide fade
             modalVisible: false,//模态场景是否可见
             transparent: true,//是否透明显示
-
         };
-
-
     }
 
     render(){
         if (!this.props.headerDataDic) return <View></View>;
         console.log('返回视图');
         return(
-            <View style={styles.headViewStyle}>
+            <View style={styles.headViewStyle} onLayout={this.props.onLayout}>
                 {/*左边*/}
                 <Image source={{uri:this.props.headerDataDic.pic}} style={styles.imageViewStyle}/>
                 {/*右边*/}

@@ -19,12 +19,12 @@ import Main from './Component/Main/Main'
 
 
 
-  global.console = {
-    info: () => {},
-    log: () => {},
-    warn: () => {},
-    error: () => {},
-  };
+  // global.console = {
+  //   info: () => {},
+  //   log: () => {},
+  //   warn: () => {},
+  //   error: () => {},
+  // };
 
 
 

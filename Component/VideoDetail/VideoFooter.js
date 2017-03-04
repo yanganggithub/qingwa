@@ -33,7 +33,7 @@ export default class VideoDetail extends Component {
         if (!this.props.footerDataDic) return <View></View>;
         console.log(this.props.footerDataDic)
         return(
-            <View sytle={styles.container}>
+            <View  style={this.props.style}>
 
                 <ScrollableTabView
                     tabBarUnderlineColor='#FF0000'
@@ -42,7 +42,7 @@ export default class VideoDetail extends Component {
                     tabBarInactiveTextColor='#262626'
                     tabBarTextStyle={{fontSize: 14}}
                 >
-                    <SimilarList tabLabel="类似"  data={this.props.footerDataDic['near_list']} navigator={this.props.navigator}/>
+                    <SimilarList tabLabel="类似" data={this.props.footerDataDic['near_list']} navigator={this.props.navigator}/>
                     <CommentList tabLabel="影评"  data={this.props.footerDataDic['comment_list']} navigator={this.props.navigator}/>
                     <BriefList tabLabel="简介" data={this.props.footerDataDic['content']} navigator={this.props.navigator}/>
 
@@ -70,11 +70,13 @@ class SimilarList extends Component {
     }
     render(){
         return(
+
             <ListView
                 dataSource={this.state.dataSource}
                 renderRow={this.renderRow.bind(this)}
 
             />
+
         )
     }
 
@@ -183,4 +185,5 @@ const styles = StyleSheet.create({
     lineStyle:{
         backgroundColor:'#00ae54'
     },
+
 })

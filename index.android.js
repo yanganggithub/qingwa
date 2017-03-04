@@ -13,6 +13,14 @@ import {
 } from 'react-native';
 /**-------导入外部的组件类---------**/
 import Main from './Component/Main/Main'
+//
+// global.console = {
+//   info: () => {},
+//   log: () => {},
+//   warn: () => {},
+//   error: () => {},
+// };
+
 
 export default class qingwa extends Component {
   render() {

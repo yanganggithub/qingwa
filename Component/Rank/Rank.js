@@ -430,8 +430,7 @@ const styles = StyleSheet.create({
     },
 
     txtStyle:{
-        marginTop:30
-
+        marginTop:Platform.OS == 'ios' ? 30 : 10
     },
 
     navOutViewStyle:{

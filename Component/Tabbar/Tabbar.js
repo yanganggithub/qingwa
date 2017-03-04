@@ -23,6 +23,9 @@ import Home from '../Home/Home';
 import Channel from '../Channel/Channel';
 import Rank from '../Rank/Rank';
 import Me from '../Me/Me';
+import HomeUI from '../Me/HomeUI';
+
+
 
 
 
@@ -48,7 +51,7 @@ export default class Tabbar extends Component{
             {/*--我的--*/}
             {this.renderTabBarItem('排行', 'tab_top', 'tab_top_current','rank', '排行', Rank)}
             {/*--更多--*/}
-            {this.renderTabBarItem('我的', 'tab_me', 'tab_me_current','me', '我的', Me)}
+            {this.renderTabBarItem('我的', 'tab_me', 'tab_me_current','me', '我的', HomeUI)}
         </TabNavigator>
         );
 

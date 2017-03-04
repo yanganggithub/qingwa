@@ -13,13 +13,14 @@ import {
     Text,
     View,
     Image,
-    Platform,   // 判断当前运行的系统
     ListView,
     TouchableOpacity,
     Navigator,
-    ActivityIndicator
-} from 'react-native';
+    Platform,
 
+
+
+} from 'react-native';
 
 
 
@@ -40,7 +41,6 @@ export default class Home extends Component{
         this.state = {
              headerDataArr: [],
 
-             animating: true,
 
             // cell的数据源
             dataSource: new ListView.DataSource({
@@ -52,15 +52,12 @@ export default class Home extends Component{
 
     render() {
         console.log(height);
+
+
         return (
         <View style={styles.container}>
 
-            <View  style={{bottom:0,width:width,height:height ,position:'absolute'}}>
-                <ActivityIndicator
-                    animating={this.state.animating}
-                    style={{marginTop:height/2.0,height:80}}
-                    size="small" />
-            </View>
+
 
             {/*导航*/}
             {this.renderNavBar()}
@@ -74,6 +71,16 @@ export default class Home extends Component{
         </View>
 
         );
+    }
+
+    async _onReadyAsync({data: {children: stories}}) {
+        return new Promise((resolve) => {
+            this.setState({stories}, resolve);
+        });
+    }
+
+    getLoading() {
+        return this.refs['loading'];
     }
 
     // 请求网络数据
@@ -90,9 +97,15 @@ export default class Home extends Component{
                 var jsonData = responseData['data'];
                 // 处理网络数据
                 this.dealWithData(jsonData);
+                this.setState({
+                    visible: !this.state.visible
+                });
             })
             .catch((error)=>{
                 console.log(error);
+                this.setState({
+                    visible: !this.state.visible
+                });
             })
 
     }

@@ -27,26 +27,26 @@ import request from '../Common/request';
 import config from '../Common/config';
 import VideoHeader from '../VideoDetail/VideoHeader'
 import VideoFooter from '../VideoDetail/VideoFooter'
+import VideoPlayIOS from '../VideoPlay/VideoPlayIOS'
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Dimensions from'Dimensions';
 var {width,height} = Dimensions.get('window');
-
+var headerHeight;
 
 export default class VideoDetail extends Component{
     constructor(props){
         super(props);
         this.state = {
+            scrollVar:true,
             headerDataDic:null,
             footerDataDic:null,
-            animationType: 'none',//none slide fade
+            animationType: 'slide',//none slide fade
             modalVisible: false,//模态场景是否可见
             transparent: true,//是否透明显示
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2
             })
-
-
         };
         
 
@@ -55,22 +55,116 @@ export default class VideoDetail extends Component{
 
 
     render() {
+
+        const detailView =  Platform.OS == 'ios' ? (<ListView
+            ref="listView"
+            style={styles.listStyle}
+            dataSource={this.state.dataSource}
+            bounces={false}
+            renderRow={this.renderRow.bind(this)}
+            renderHeader={this.renderHeader.bind(this)}
+            onScrollEndDrag={(e)=>this.scrollEnd(e)}
+        />) :
+            (<ScrollView     ref="scrollView" onScroll={(e)=>this.onScroll(e)} onContentSizeChange={(contentWidth,contentHeight)=>this.onContentSize(contentWidth,contentHeight)} scrollEnabled={this.state.scrollVar}>
+
+                <VideoHeader  headerDataDic={this.state.headerDataDic}
+                              onLayout={(event) => {
+
+                                  let viewHeight = event.nativeEvent.layout.height;
+
+                                  if (!viewHeight || headerHeight === viewHeight) {
+                                      return;
+                                  }
+                                  headerHeight = viewHeight;
+                                  console.log('onLayout');
+                                  console.log('onLayout:headerHeight=',headerHeight);
+
+                              }}
+                >
+
+                </VideoHeader>
+
+                <VideoFooter  footerDataDic={this.state.footerDataDic}  style={styles.footerStyle1}>
+
+                </VideoFooter>
+
+
+            </ScrollView>)
+
+
+
+            let modalBackgroundStyle = {
+            backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
+        };
+
+        let innerContainerTransparentStyle = this.state.transparent
+            ? { backgroundColor: '#fff', padding: 20 }
+            : null;
+
         return (
+
             <View style={styles.container}>
 
                 {/*导航*/}
                 {this.renderNavBar()}
 
+                <Modal
+                    animationType={this.state.animationType}
+                    transparent={this.state.transparent}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => { this.setModalVisible(false) } }
+                    onShow={this.startShow}
+                >
+                    <View style={[{
+                        flex: 1,
+                        justifyContent: 'center',
+                        padding: 40,
+                    }, modalBackgroundStyle]}>
+                        <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
+                            <Text style={styles.date}>2016-08-11</Text>
+                            <View style={styles.row}>
+                                <View >
+                                    <Text style={styles.station}>长沙站</Text>
+                                    <Text style={styles.mp10}>8: 00出发</Text>
+                                </View>
+                                <View>
+                                    <View style={styles.at}></View>
+                                    <Text style={[styles.mp10, { textAlign: 'center' }]}>G888</Text>
+                                </View>
+                                <View >
+                                    <Text style={[styles.station, { textAlign: 'right' }]}>北京站</Text>
+                                    <Text style={[styles.mp10, { textAlign: 'right' }]}>18: 00抵达</Text>
+                                </View>
+                            </View>
+                            <View style={styles.mp10}>
+                                <Text>票价：￥600.00元</Text>
+                                <Text>乘车人：东方耀</Text>
+                                <Text>长沙站 火车南站 网售</Text>
+                            </View>
+                            <View style={[styles.mp10, styles.btn, { alignItems: 'center' }]}>
+                                <Text style={styles.btn_text}>去支付</Text>
+                            </View>
+                            <Text
+                                onPress={this.setModalVisible.bind(this,false) }
+                                style={{fontSize:20,marginTop:10}}>
+                                关闭
+                            </Text>
+                        </View>
+                    </View>
+                </Modal>
 
-                <ListView
-                    ref="listView"
-                    style={styles.listStyle}
-                    dataSource={this.state.dataSource}
-                    bounces={false}
-                    renderRow={this.renderRow.bind(this)}
-                    renderHeader={this.renderHeader.bind(this)}
-                    onScrollEndDrag={(e)=>this.scrollEnd(e)}
-                />
+                {detailView}
+
+
+                {/*<ListView*/}
+                    {/*ref="listView"*/}
+                    {/*style={styles.listStyle}*/}
+                    {/*dataSource={this.state.dataSource}*/}
+                    {/*bounces={false}*/}
+                    {/*renderRow={this.renderRow.bind(this)}*/}
+                    {/*renderHeader={this.renderHeader.bind(this)}*/}
+                    {/*onScrollEndDrag={(e)=>this.scrollEnd(e)}*/}
+                {/*/>*/}
 
 
 
@@ -90,6 +184,21 @@ export default class VideoDetail extends Component{
 
         );
     }
+    onScroll(e){
+
+        var offSetY = e.nativeEvent.contentOffset.y;
+        console.log('offSetY=', offSetY);
+        console.log('headerHeight=', headerHeight);
+        if (offSetY > headerHeight){
+            console.log('更改了状态');
+       
+        }
+
+    }
+
+    onContentSize(contentWidth,contentHeight){
+        console.log('contentHeight=', contentHeight);
+    }
 
     scrollEnd(e){
 
@@ -103,7 +212,7 @@ export default class VideoDetail extends Component{
     }
 
     startShow=()=>{
-        alert('开始显示了');
+
     }
 
     renderHeader(){
@@ -131,9 +240,22 @@ export default class VideoDetail extends Component{
                     </View>
 
                     <View style={styles.contentStyle}>
-                        <Text style={{color:'white',fontSize:12}}  onPress={this.originAction.bind(this)}>来源: {this.state.headerDataDic.vod_url_list[0].origin.name}</Text>
+                        <Text style={{color:'white',fontSize:12}}  onPress={this.originAction.bind(this,true)}>来源: {this.state.headerDataDic.vod_url_list[0].origin.name}</Text>
                     </View>
 
+                    <View style={styles.btn}>
+                        <Text style={styles.btn_text}  onPress={()=>{
+                            const { navigator } = this.props;
+
+                            if (navigator) {
+                                navigator.push({
+                                    name: '详情页面',
+                                    component: VideoPlayIOS,
+                                    params:this.state.headerDataDic.vod_url_list[0].list[0]
+                                })
+                            }
+                        } }>播放</Text>
+                    </View>
 
                 </View>
             </View>
@@ -141,62 +263,8 @@ export default class VideoDetail extends Component{
         );
     }
 
-    originAction(){
-        console.log('originAction');
-        let modalBackgroundStyle = {
-            backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
-        };
-
-        let innerContainerTransparentStyle = this.state.transparent
-            ? { backgroundColor: '#fff', padding: 20 }
-            : null;
-
-        <View style={{ alignItems: 'center', flex: 1 }}>
-            <Modal
-                animationType={this.state.animationType}
-                transparent={this.state.transparent}
-                visible={this.state.modalVisible}
-                onRequestClose={() => { this.setModalVisible(false) } }
-                onShow={this.startShow}
-            >
-                <View style={[styles.container, modalBackgroundStyle]}>
-                    <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-                        <Text style={styles.date}>2016-08-11</Text>
-                        <View style={styles.row}>
-                            <View >
-                                <Text style={styles.station}>长沙站</Text>
-                                <Text style={styles.mp10}>8: 00出发</Text>
-                            </View>
-                            <View>
-                                <View style={styles.at}></View>
-                                <Text style={[styles.mp10, { textAlign: 'center' }]}>G888</Text>
-                            </View>
-                            <View >
-                                <Text style={[styles.station, { textAlign: 'right' }]}>北京站</Text>
-                                <Text style={[styles.mp10, { textAlign: 'right' }]}>18: 00抵达</Text>
-                            </View>
-                        </View>
-                        <View style={styles.mp10}>
-                            <Text>票价：￥600.00元</Text>
-                            <Text>乘车人：东方耀</Text>
-                            <Text>长沙站 火车南站 网售</Text>
-                        </View>
-                        <View style={[styles.mp10, styles.btn, { alignItems: 'center' }]}>
-                            <Text style={styles.btn_text}>去支付</Text>
-                        </View>
-                        <Text
-                            onPress={this.setModalVisible.bind(this,false) }
-                            style={{fontSize:20,marginTop:10}}>
-                            关闭
-                        </Text>
-                    </View>
-                </View>
-            </Modal>
-
-            <Text style={{ fontSize: 30,color:'red' }}  onPress={this.setModalVisible.bind(this, true) }>预定火车票</Text>
-
-
-        </View>
+    originAction(visible){
+        this.setState({ modalVisible: visible });
 
     }
 
@@ -206,8 +274,10 @@ export default class VideoDetail extends Component{
 
 
     renderRow(rowData){
+        let rowStyle =  Platform.OS == 'ios' ? { width:width, height:height - 64}:null ;
         return(
-            <View style={styles.rowStyle}>
+
+            <View style={rowStyle}>
                 <ScrollableTabView
                     tabBarUnderlineColor='#FF0000'
                     tabBarUnderlineStyle={styles.lineStyle}
@@ -248,12 +318,8 @@ export default class VideoDetail extends Component{
                 if (err){
                     console.log(err);
                 }
-
-
             }
         )
-
-
     }
 
 
@@ -341,10 +407,12 @@ class SimilarList extends Component {
 
         var offset =  e.nativeEvent.contentOffset.y;
 
-        if (offset<0){
+        if (offset<=0){
 
 
-           // this.unEnabledScroll();
+           this.unEnabledScroll();
+        }else {
+            this.makeScroll();
         }
 
     }
@@ -513,10 +581,7 @@ const styles = StyleSheet.create({
         marginBottom:2
     },
 
-    rowStyle:{
-        width:width,
-        height:height - 64
-    },
+
     innerContainer: {
         borderRadius: 10,
         alignItems: 'center',
@@ -582,11 +647,12 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     btn: {
-        width: 60,
-        height: 30,
+        justifyContent:'center',
+        marginTop:5,
+        width: 100,
+        height: 40,
         borderRadius: 3,
-        backgroundColor: '#FFBA27',
-        padding: 5,
+        backgroundColor: '#00ae54',
     },
     btn_text: {
         lineHeight: 18,
@@ -594,6 +660,11 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 
+    footerStyle:
+    {
+        width:width,
+        height:height - 64 -64
+    },
 
 
 
