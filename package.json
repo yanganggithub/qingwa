@@ -14,9 +14,11 @@
     "react-native-loading-container": "^0.4.1",
     "react-native-loading-spinner-overlay": "^0.4.1",
     "react-native-loading-w": "^1.0.0",
+    "react-native-orientation": "^1.17.0",
     "react-native-pull": "^2.0.1",
     "react-native-scrollable-tab-view": "^0.7.2",
     "react-native-tab-navigator": "^0.3.3",
+    "react-native-vector-icons": "^4.0.0",
     "react-native-video": "^1.0.0"
   },
   "devDependencies": {

@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     iconStyle:{
-        width: Platform.OS === 'ios' ? 20 : 25,
-        height:Platform.OS === 'ios' ? 20 : 25
+        width: Platform.OS === 'ios' ? 20 : 20,
+        height:Platform.OS === 'ios' ? 20 : 20
     },
     selectedTitleStyle:{
         color:'#262626'

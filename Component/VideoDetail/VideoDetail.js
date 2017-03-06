@@ -286,7 +286,7 @@ export default class VideoDetail extends Component{
                     tabBarTextStyle={{fontSize: 14}}
                 >
 
-                    <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar} }data={rowData['near_list']} />
+                    <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar} }data={rowData['near_list']} navigator={this.props.navigator} />
                     <CommentList tabLabel="影评"  data={rowData['comment_list']} navigator={this.props.navigator}/>
                     <BriefList tabLabel="简介" data={rowData['content']} navigator={this.props.navigator}/>
 

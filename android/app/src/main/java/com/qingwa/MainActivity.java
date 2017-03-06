@@ -1,6 +1,9 @@
 package com.qingwa;
 
 import com.facebook.react.ReactActivity;
+import com.brentvatne.react.ReactVideoPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.github.yamill.orientation.OrientationPackage;
 
 public class MainActivity extends ReactActivity {
 

@@ -39,7 +39,7 @@ export default  class Main extends Component{
         return (
 
         <Navigator
-            initialRoute={{name:"竹节棉",component:Tabbar}}
+            initialRoute={{name:"根导航",component:Tabbar}}
             configureScene={()=>{// 过渡动画
                 return Navigator.SceneConfigs.PushFromRight;
             }}
