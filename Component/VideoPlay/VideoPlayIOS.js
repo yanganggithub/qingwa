@@ -12,6 +12,9 @@ import {
     View,
     Image,
     ActivityIndicator,
+    ProgressViewIOS,
+    PanResponder,
+
 } from 'react-native';
 
 import Video from 'react-native-video';
@@ -23,7 +26,7 @@ import request from '../Common/request';
 import config from '../Common/config';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-var {width,height} = Dimensions.get('window');
+const {width,height} = Dimensions.get('window');
 // Platform.OS === 'ios' ? <VideoPlayerIos/> : <VideoPlayerAndroid/>
 
 
@@ -46,6 +49,7 @@ export default class VideoPlayer extends Component {
             videoLoaded:false,
             playing:false,
             initVideo:false,
+            progress: 0,
 
             realUrl:this.props.play_url
 
@@ -60,12 +64,17 @@ export default class VideoPlayer extends Component {
         this._pause = this._pause.bind(this);
         this._resume = this._resume.bind(this);
         this._pop = this._pop.bind(this);
+        this._onPanResponderGrant = this._onPanResponderGrant.bind(this);
+        this._onPanResponderMove = this._onPanResponderMove.bind(this);
 
     }
+
+
 
     _pop(){
         let {navigator} = this.props;
         if(navigator){
+            Orientation.lockToPortrait();
             navigator.pop();
         }
     }
@@ -100,6 +109,41 @@ export default class VideoPlayer extends Component {
 
         this.refs.videoPlayer.seek(0);
 
+    }
+
+    _onPanResponderGrant = (event, gestureState) => {
+        console.log('按下');
+        let touchPonitX = gestureState.x0;
+        let progress;
+        if (touchPonitX < 0) progress = 0;
+        else {
+            if (touchPonitX > height)  progress = 1;
+            else progress = touchPonitX  / height;
+        }
+        this.refs.videoPlayer.seek(progress * this.state.duration);
+
+    }
+
+    _onPanResponderMove = (event, gestureState) => {
+        console.log('移动');
+        let touchPonitX = gestureState.moveX;
+        let progress;
+
+        if (touchPonitX < 0) progress = 0;
+        else {
+            if (touchPonitX > height) progress = 1;
+            else progress = touchPonitX  / height;
+        }
+        this.refs.videoPlayer.seek(progress * this.state.duration);
+
+    }
+
+    componentWillMount() {
+        this._panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderGrant: this._onPanResponderGrant,//处理按下的事件
+            onPanResponderMove: this._onPanResponderMove,//处理移动的事件
+        });
     }
 
 
@@ -199,28 +243,28 @@ export default class VideoPlayer extends Component {
 
                         </View>
 
-
-
-
-
-
                         <View style={styles.progress}>
+
                             <View style={[styles.innerProgressCompleted, {flex: flexCompleted}]} />
                             <View style={[styles.innerProgressRemaining, {flex: flexRemaining}]} />
+
                         </View>
+
+
+
+
+                           <View style={styles.touchViewStyle}
+                              {...this._panResponder.panHandlers} />
+
+
 
 
                     </View>
 
                 </View>
             );
-
-
         }
-
-
     }
-
 
 
     loadDataFromNet(){
@@ -284,18 +328,6 @@ export default class VideoPlayer extends Component {
 
     }
 
-    componentWillMount() {
-        //The getOrientation method is async. It happens sometimes that
-        //you need the orientation at the moment the js starts running on device.
-        //getInitialOrientation returns directly because its a constant set at the
-        //beginning of the js code.
-        var initial = Orientation.getInitialOrientation();
-        if (initial === 'PORTRAIT') {
-            //do stuff
-        } else {
-            //do other stuff
-        }
-    }
 
     _orientationDidChange(orientation) {
         if (orientation == 'LANDSCAPE') {
@@ -320,7 +352,7 @@ export default class VideoPlayer extends Component {
 
     componentWillUnmount(){
         Orientation.getOrientation((err,orientation)=> {
-            Orientation.lockToPortrait();
+
         });
         Orientation.removeOrientationListener(this._orientationDidChange);
     }
@@ -359,7 +391,7 @@ const styles = StyleSheet.create({
     videoBox:{
         width:height,
         height:width,
-        backgroundColor:'black'
+        backgroundColor:'white'
     },
     video:{
         width:height,
@@ -370,7 +402,7 @@ const styles = StyleSheet.create({
     blackStyle:{
         width:width,
         height:height,
-        backgroundColor:'black',
+        backgroundColor:'white',
 
     },
 
@@ -451,6 +483,23 @@ const styles = StyleSheet.create({
     backText:{
         color:'#999',
         fontSize:16,
+    },
+
+    progressViewStyle: {
+        backgroundColor: 'red',
+        width: height,
+        left: 0,
+        top: width - 10,
+        position:'absolute',
+    },
+
+    touchViewStyle: {
+        width: height,
+        height: 10,
+        backgroundColor: 'transparent',
+        position: 'absolute',
+        left: 0,
+        top: width - 10,
     },
 
 

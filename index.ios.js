@@ -6,10 +6,10 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 
 
@@ -19,12 +19,12 @@ import Main from './Component/Main/Main'
 
 
 
-  global.console = {
-    info: () => {},
-    log: () => {},
-    warn: () => {},
-    error: () => {},
-  };
+  // global.console = {
+  //   info: () => {},
+  //   log: () => {},
+  //   warn: () => {},
+  //   error: () => {},
+  // };
 
 
 
@@ -34,7 +34,7 @@ export default class qingwa extends Component {
 
     
     return (
-      <Main/>
+        <Main/>
     );
   }
 }
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
-  },
+  }
 });
 
 AppRegistry.registerComponent('qingwa', () => qingwa);
