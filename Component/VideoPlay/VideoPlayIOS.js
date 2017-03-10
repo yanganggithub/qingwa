@@ -49,7 +49,9 @@ export default class VideoPlayer extends Component {
             videoLoaded:false,
             playing:false,
             initVideo:false,
+            initWebView:false,
             progress: 0,
+            transform:false,
 
             realUrl:this.props.play_url
 
@@ -149,27 +151,36 @@ export default class VideoPlayer extends Component {
 
 
     render() {
-        if (!this.state.initVideo){
-            return(
-                <View style={styles.container}>
-                    <View style={styles.blackStyle}/>
-                </View>
+        if (!this.state.initVideo && !this.state.initWebView ){
+            if (this.state.transform){
+                return(
+                    <View style={styles.container}>
+                        <View style={styles.blackLandsscapeStyle}/>
+                    </View>
 
-            );
+                );
+            }else {
+                return(
+                    <View style={styles.container}>
+                        <View style={styles.blackPortraitStyle}/>
+                    </View>
+
+                );
+            }
+
+
         }
 
         if (this.state.initVideo)
         {
             let rowData =  this.state.rowData;
-            console.log('myurl ' +this.props.play_url);
+            console.log('视频播放url： ',this.props.play_url);
             const flexCompleted = this.getCurrentTimePercentage() * 100;
             const flexRemaining = (1 - this.getCurrentTimePercentage()) * 100;
 
             return (
 
                 <View style={styles.container}>
-
-
 
                     <View style={styles.videoBox}>
 
@@ -250,19 +261,17 @@ export default class VideoPlayer extends Component {
 
                         </View>
 
-
-
-
                            <View style={styles.touchViewStyle}
                               {...this._panResponder.panHandlers} />
-
-
 
 
                     </View>
 
                 </View>
             );
+        }else if(this.state.initWebView){
+            alert('创建webView');
+
         }
     }
 
@@ -279,16 +288,33 @@ export default class VideoPlayer extends Component {
                 console.log('视频地址解析成功'+ responseData);
                 console.log('真实地址'+responseData.data.file);
                 console.log('responseData.data.type',responseData.data.play_type);
-                this.setState({
-                    realUrl:responseData.data.file
-                })
+                if (responseData.data.play_type == 1){
+                    this.setState({
+                        realUrl:responseData.data.file,
+                        initVideo:true
+                    });
+                }else {
+                    this.setState({
+                        realUrl:responseData.data.file,
+                        initWebView:true
+                    });
+                }
+
+
+
 
 
             }
         ).catch(
             (err) => {
                 if (err){
-                    console.log('视频解析失败');
+                    alert('视频解析失败');
+                    let {navigator} = this.props;
+                    if(navigator){
+                        Orientation.lockToPortrait();
+                        navigator.pop();
+                    }
+
                 }
             }
         )
@@ -332,11 +358,11 @@ export default class VideoPlayer extends Component {
     _orientationDidChange(orientation) {
         if (orientation == 'LANDSCAPE') {
 
-
+           this.setState({
+               transform:true
+           });
             //do something with landscape layout
-            this.setState({
-                initVideo:true
-            });
+
 
 
         } else {
@@ -371,7 +397,7 @@ export default class VideoPlayer extends Component {
     }
 
     _onError(error){
-        console.log('错误：'+JSON.stringify(error));
+        console.log('视频url错误：'+JSON.stringify(error));
     }
 }
 
@@ -399,13 +425,18 @@ const styles = StyleSheet.create({
         backgroundColor:'black'
     },
 
-    blackStyle:{
+    blackPortraitStyle:{
         width:width,
         height:height,
-        backgroundColor:'white',
+        backgroundColor:'black',
 
     },
 
+    blackLandsscapeStyle:{
+        width:height,
+        height:width,
+        backgroundColor:'black',
+    },
     loading:{
         position:'absolute',
         left:0,

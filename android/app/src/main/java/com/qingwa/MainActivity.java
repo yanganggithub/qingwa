@@ -4,6 +4,8 @@ import com.facebook.react.ReactActivity;
 import com.brentvatne.react.ReactVideoPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.github.yamill.orientation.OrientationPackage;
+import android.content.Intent; // <--- import
+import android.content.res.Configuration; // <--- import
 
 public class MainActivity extends ReactActivity {
 
@@ -14,5 +16,13 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "qingwa";
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent intent = new Intent("onConfigurationChanged");
+        intent.putExtra("newConfig", newConfig);
+        this.sendBroadcast(intent);
     }
 }

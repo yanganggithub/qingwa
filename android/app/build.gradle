@@ -66,6 +66,8 @@ import com.android.build.OutputFile
  */
 
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -109,8 +111,16 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField "String", "CODEPUSH_KEY", '"Z8BvBa6DLbJLSojMltyX2lgGCF-mN1MboTkuM"'
+        }
+
+        debug{
+            buildConfigField "String", "CODEPUSH_KEY", '"gmnga3oCND3hoar7ambMTMt7JZ1QN1MboTkuM"'
         }
     }
+
+
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -127,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-code-push')
     compile project(':react-native-video')
     compile project(':react-native-vector-icons')
     compile project(':react-native-orientation')

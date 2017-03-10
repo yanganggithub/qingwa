@@ -51,7 +51,7 @@ export default class Tabbar extends Component{
             {/*--我的--*/}
             {this.renderTabBarItem('排行', 'tab_top', 'tab_top_current','rank', '排行', Rank)}
             {/*--更多--*/}
-            {this.renderTabBarItem('我的', 'tab_me', 'tab_me_current','me', '我的', HomeUI)}
+            {this.renderTabBarItem('我的', 'tab_me', 'tab_me_current','me', '我的', Me)}
         </TabNavigator>
         );
 

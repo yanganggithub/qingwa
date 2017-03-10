@@ -57,8 +57,8 @@ export default class Rank extends Component{
                     >
                     <VideoList tabLabel="电影"  type="1" navigator={this.props.navigator}/>
                     <VideoList tabLabel="电视剧" type="2" navigator={this.props.navigator}/>
-                    <VideoList tabLabel="综艺" type="3" navigator={this.props.navigator}/>
-                    <VideoList tabLabel="动漫" type="4" navigator={this.props.navigator}/>
+                    <VideoList tabLabel="综艺" type="4" navigator={this.props.navigator}/>
+                    <VideoList tabLabel="动漫" type="3" navigator={this.props.navigator}/>
 
                    
                 </ScrollableTabView>
@@ -253,7 +253,7 @@ class VideoList extends Component {
 
     renderRow(rowData){
         return(
-            <TouchableOpacity onPress={()=>{
+            <TouchableOpacity activeOpacity={1} onPress={()=>{
                 const { navigator } = this.props;
 
                 if (navigator) {

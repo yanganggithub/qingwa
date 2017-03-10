@@ -33,6 +33,7 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Dimensions from'Dimensions';
 var {width,height} = Dimensions.get('window');
 var headerHeight;
+var scrollGlobalVar = false;
 
 export default class VideoDetail extends Component{
     constructor(props){
@@ -48,15 +49,13 @@ export default class VideoDetail extends Component{
                 rowHasChanged: (r1, r2) => r1 !== r2
             })
         };
-        
-
     }
 
 
 
     render() {
 
-        const detailView =  Platform.OS == 'ios' ? (<ListView
+        const detailView =  Platform.OS == 'ios' || Platform.OS == 'android'? (<ListView
             ref="listView"
             style={styles.listStyle}
             dataSource={this.state.dataSource}
@@ -202,12 +201,27 @@ export default class VideoDetail extends Component{
 
     scrollEnd(e){
 
+
         var offset =  e.nativeEvent.contentOffset.y;
         console.log("offset=",offset);
-        if (offset>=134){
+        if (offset>=headerHeight){
             console.log("可以滑动了");
             console.log(this.similar);
-            this.similar.makeScroll();
+
+            if (this.similar)
+            {
+                this.similar.makeScroll();
+            }
+
+            if (this.comment){
+                this.comment.makeScroll();
+            }
+
+            if(this.series){
+                this.series.makeScroll();
+            }
+
+
         }
     }
 
@@ -219,7 +233,17 @@ export default class VideoDetail extends Component{
         if (!this.state.headerDataDic) return <View></View>;
         console.log('返回视图');
         return(
-            <View style={styles.headViewStyle}>
+            <View style={styles.headViewStyle}  onLayout={(event) => {
+
+                let viewHeight = event.nativeEvent.layout.height;
+
+                if (!viewHeight || headerHeight === viewHeight) {
+                    return;
+                }
+                headerHeight = viewHeight;
+                console.log('onLayout:headerHeight=',headerHeight);
+
+            }}>
                 {/*左边*/}
                 <Image source={{uri:this.state.headerDataDic.pic}} style={styles.imageViewStyle}/>
                 {/*右边*/}
@@ -274,25 +298,76 @@ export default class VideoDetail extends Component{
 
 
     renderRow(rowData){
+        console.log('rowData:',rowData);
+
         let rowStyle =  Platform.OS == 'ios' ? { width:width, height:height - 64}:null ;
-        return(
+        let dic = new Array();
+        dic['content'] = rowData['content'];
+        dic['director'] = rowData['director'];
+        dic['actor'] = rowData['actor'];
+        dic['keywords'] = rowData['keywords'];
+        dic['year'] = rowData['year'];
+        console.log('dic:',dic);
 
-            <View style={rowStyle}>
-                <ScrollableTabView
-                    tabBarUnderlineColor='#FF0000'
-                    tabBarUnderlineStyle={styles.lineStyle}
-                    tabBarActiveTextColor='#00ae54'
-                    tabBarInactiveTextColor='#262626'
-                    tabBarTextStyle={{fontSize: 14}}
-                >
+        if (rowData.type === 1){
+            return(
 
-                    <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar} }data={rowData['near_list']} navigator={this.props.navigator} />
-                    <CommentList tabLabel="影评"  data={rowData['comment_list']} navigator={this.props.navigator}/>
-                    <BriefList tabLabel="简介" data={rowData['content']} navigator={this.props.navigator}/>
+                <View style={rowStyle}>
+                    <ScrollableTabView
+                        tabBarUnderlineColor='#FF0000'
+                        tabBarUnderlineStyle={styles.lineStyle}
+                        tabBarActiveTextColor='#00ae54'
+                        tabBarInactiveTextColor='#262626'
+                        tabBarTextStyle={{fontSize: 14}}
+                    >
 
-                </ScrollableTabView>
-            </View>
-        )
+                        <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar}} data={rowData['near_list']} navigator={this.props.navigator} />
+                        <CommentList tabLabel="影评"  ref={(comment)=>{this.comment = comment}} data={rowData['comment_list']} navigator={this.props.navigator}/>
+                        <BriefList tabLabel="简介" data={dic} navigator={this.props.navigator}/>
+
+                    </ScrollableTabView>
+                </View>
+            )
+        }else if(rowData.type ===2 || rowData.type ===3 ){
+           console.log('test', rowData.vod_url_list[0].list);
+            return(
+
+                <View style={rowStyle}>
+                    <ScrollableTabView
+                        tabBarUnderlineColor='#FF0000'
+                        tabBarUnderlineStyle={styles.lineStyle}
+                        tabBarActiveTextColor='#00ae54'
+                        tabBarInactiveTextColor='#262626'
+                        tabBarTextStyle={{fontSize: 14}}
+                    >
+
+                        <SeriesList tabLabel="剧集" ref={(series)=>{this.series = series}} data={ rowData.vod_url_list[0].list} navigator={this.props.navigator}/>
+                        <SimilarList  tabLabel="类似"  ref={(similar)=>{this.similar = similar}} data={rowData['near_list']} navigator={this.props.navigator} />
+                        <BriefList tabLabel="简介" data={dic} navigator={this.props.navigator}/>
+
+                    </ScrollableTabView>
+                </View>
+            )
+        }else if(rowData.type ===4 ){
+            return(
+
+                <View style={rowStyle}>
+                    <ScrollableTabView
+                        tabBarUnderlineColor='#FF0000'
+                        tabBarUnderlineStyle={styles.lineStyle}
+                        tabBarActiveTextColor='#00ae54'
+                        tabBarInactiveTextColor='#262626'
+                        tabBarTextStyle={{fontSize: 14}}
+                    >
+
+                        <SeriesList tabLabel="剧集" ref={(series)=>{this.series = series}} data={ rowData.vod_url_list[0].list} navigator={this.props.navigator}/>
+                        <BriefList tabLabel="简介" data={dic} navigator={this.props.navigator}/>
+
+                    </ScrollableTabView>
+                </View>
+            )
+        }
+
     }
 
     // 请求网络数据
@@ -365,13 +440,15 @@ export default class VideoDetail extends Component{
 
 }
 
+
+//相似
 class SimilarList extends Component {
     constructor(props) {
         super(props);
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            scrollVar:false,
             // cell的数据源
+            scrollVar:false,
             dataSource: ds.cloneWithRows(this.props.data)
 
         }
@@ -380,14 +457,16 @@ class SimilarList extends Component {
     }
 
     makeScroll(){
+        scrollGlobalVar = true;
         this.setState({
-            scrollVar:true
+            scrollVar:scrollGlobalVar
         });
     }
 
     unEnabledScroll(){
+        scrollGlobalVar = false;
         this.setState({
-            scrollVar:false
+            scrollVar:scrollGlobalVar
         });
     }
 
@@ -398,7 +477,7 @@ class SimilarList extends Component {
                 dataSource={this.state.dataSource}
                 renderRow={this.renderSimilarRow}
                 onScrollEndDrag={(e)=>this.scrollEnd(e)}
-                    scrollEnabled={this.state.scrollVar}
+                    scrollEnabled={scrollGlobalVar}
             />
         )
     }
@@ -455,37 +534,293 @@ class SimilarList extends Component {
     }
 }
 
+//评价
 class CommentList extends Component {
     constructor(props) {
         super(props);
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.state = {
+            scrollVar:false,
+            // cell的数据源
+            dataSource: ds.cloneWithRows(this.props.data)
 
+        }
+        this.renderCommentRow= this.renderCommentRow.bind(this);
+
+    }
+
+    makeScroll(){
+        console.log('视图状态改变');
+        scrollGlobalVar = true;
+        this.setState({
+            scrollVar:scrollGlobalVar
+        });
+    }
+
+    unEnabledScroll(){
+        scrollGlobalVar = false;
+        this.setState({
+            scrollVar:scrollGlobalVar
+        });
     }
 
     render(){
         return(
-            <View>
-                <Text>评论</Text>
+            <ListView
+                ref="commentListView"
+                dataSource={this.state.dataSource}
+                renderRow={this.renderCommentRow}
+                onScrollEndDrag={(e)=>this.scrollEnd(e)}
+                scrollEnabled={scrollGlobalVar}
+            />
+        )
+    }
+
+    scrollEnd(e){
+
+        var offset =  e.nativeEvent.contentOffset.y;
+
+        if (offset<=0){
+
+
+            this.unEnabledScroll();
+        }else {
+            this.makeScroll();
+        }
+
+    }
+
+    renderCommentRow(rowData){
+
+        return(
+
+            <View style={styles.commentListViewStyle}>
+
+                    {/*显示用户信息*/}
+                    <View style={styles.userInfo}>
+                           <Text style={{color:'gray'}}>{rowData.username} </Text>
+                           <Text style={{color:'gray'}}>{rowData.creat_at} </Text>
+                    </View>
+
+                    {/*评论*/}
+                    <View style={styles.commentContentStyle}>
+                        <Text style={{color:'#262626',fontSize:14}}>{rowData.content} </Text>
+                    </View>
             </View>
+
         )
     }
 }
 
+//简介
 class BriefList extends Component {
     constructor(props) {
         super(props);
 
     }
-
     render() {
         return (
-            <View>
-                <Text>简介</Text>
-            </View>
+            <ScrollView >
+                <View style={styles.directorStyle}>
+                    <Text  style={{color:'gray',fontSize:14}}> 导演: </Text>
+                    <Text > {this.props.data.director}</Text>
+
+                </View>
+                <View style={styles.actorStyle}>
+                    <Text  style={{color:'gray',fontSize:14}}> 主演: </Text>
+                    <View style={{width:width - 55}}>
+                        <Text > {this.props.data.actor}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.cateStyle}>
+                    <Text  style={{color:'gray' ,fontSize:14}} > 类型: </Text>
+                    <Text>{this.props.data.keywords} </Text>
+                </View>
+                <View style={styles.yearStyle}>
+                    <Text  style={{color:'gray',fontSize:14}}> 年份: </Text>
+                    <Text> {this.props.data.year}</Text>
+                </View>
+
+                <View style={styles.desStyle}>
+                    <Text  style={{fontSize:14}}>{this.props.data.content}</Text>
+                </View>
+            </ScrollView>
         )
     }
 
 }
 
+//连续剧
+
+class SeriesList extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            scrollVar:false,
+
+        }
+
+    }
+
+    makeScroll(){
+        scrollGlobalVar = true;
+        this.setState({
+            scrollVar:scrollGlobalVar
+        });
+    }
+
+    unEnabledScroll(){
+        scrollGlobalVar = false;
+        this.setState({
+            scrollVar:scrollGlobalVar
+        });
+    }
+
+
+    render(){
+
+        let list = [];
+        console.log('render',this.props.data);
+        console.log('redner1',this.props.data[0]);
+        console.log('rednerplay',this.props.data[0].play_name);
+        let count =  this.props.data.length;
+        for (let i in this.props.data) {
+
+
+           console.log('i:',i);
+
+            if (i % 4 === 0) {
+                //两个等号 ：不判断类型
+                let string1 = "未知";
+                let string2 = "未知";
+                let string3 = "未知";
+                let string4 = "未知";
+                //三个等号：判断类型
+               if(parseInt(i) <= count - 1){
+                   string1 = this.props.data[parseInt(i)].play_name;
+               }
+               if(parseInt(i) + 1 <= count - 1){
+                  string2 = this.props.data[parseInt(i) + 1].play_name;
+               }
+
+                if(parseInt(i) + 2 <= count - 1){
+                    string3 = this.props.data[parseInt(i) + 2].play_name;
+                }
+
+                if(parseInt(i) + 3 <= count - 1){
+                   string4 =  this.props.data[parseInt(i) + 3].play_name;
+                }
+                let boolVar1 = string1 == "未知" ? false : true;
+                let boolVar2 = string2 == "未知" ? false : true;
+                let boolVar3 = string3 == "未知" ? false : true;
+                let boolVar4 = string4 == "未知" ? false : true;
+                console.log('boolVar:',boolVar1);
+
+
+
+                let row = (
+                    <View style={styles.row} key={i}>
+
+                            <Item play_name={string1}
+                                  show={boolVar1}
+                                  press={this.press.bind(this, this.props.data[i]) }
+
+                            ></Item>
+
+
+
+                        <Item play_name={string2}
+                              show={boolVar2}
+                              press={this.press.bind(this, this.props.data[i + 1]) }
+                        ></Item>
+
+
+
+                        <Item play_name={string3}
+                              show={boolVar3}
+                              press={this.press.bind(this, this.props.data[i + 2]) }
+                        ></Item>
+
+
+                        <Item play_name={string4}
+                              show={boolVar4}
+                              press={this.press.bind(this, this.props.data[i + 3]) }
+                        ></Item>
+
+
+
+
+
+                    </View>
+
+
+                );
+                list.push(row);
+
+            }
+        }
+        return (
+            <ScrollView style={{ marginTop: 10 }}>
+                {list}
+
+            </ScrollView>
+        );
+    }
+
+    press(data) {
+
+
+
+
+        const { navigator } = this.props;
+
+        if (navigator) {
+            navigator.push({
+                name: '详情页面',
+                component: VideoPlayIOS,
+                params:data
+            })
+        }
+    }
+}
+
+class Item extends Component {
+
+    static defaultProps = {
+        play_name: '默认标题',
+        show:true,
+    };  // 注意这里有分号
+    static propTypes = {
+        play_name: React.PropTypes.string.isRequired,
+        show:React.PropTypes.bool.isRequired
+    };  // 注意这里有分号
+
+
+    render() {
+
+        if (this.props.show){
+            return (
+                <View style={styles.item}>
+                    <TouchableOpacity onPress={this.props.press}>
+
+
+                        <Text numberOfLines={1} style={styles.item_text}>{this.props.play_name}</Text>
+
+
+                    </TouchableOpacity>
+                </View>
+            );
+        }else{
+            return(
+                <View style={styles.item_view}>
+                </View>
+            );
+        }
+
+    }
+}
 
 const styles = StyleSheet.create({
 
@@ -547,7 +882,6 @@ const styles = StyleSheet.create({
     rightContentStyle:{
         marginLeft:14,
         width:width - 130 - 14 * 2 - 14,
-
     },
     contentStyle:{
         marginTop:3
@@ -581,6 +915,20 @@ const styles = StyleSheet.create({
         marginBottom:2
     },
 
+    commentListViewStyle:{
+        backgroundColor:'white',
+        padding:10,
+        borderBottomColor:'#e5e5e5',
+        borderBottomWidth:0.5,
+    },
+    userInfo:{
+        justifyContent: 'space-between',
+        alignItems:'center',
+        flexDirection:'row',
+    },
+    commentContentStyle:{
+      marginTop:4,
+    },
 
     innerContainer: {
         borderRadius: 10,
@@ -649,8 +997,8 @@ const styles = StyleSheet.create({
     btn: {
         justifyContent:'center',
         marginTop:5,
-        width: 100,
-        height: 40,
+        width: 80,
+        height: 35,
         borderRadius: 3,
         backgroundColor: '#00ae54',
     },
@@ -665,6 +1013,64 @@ const styles = StyleSheet.create({
         width:width,
         height:height - 64 -64
     },
+    directorStyle: {
+        marginTop:10,
+        paddingLeft:10,
+        flexDirection:'row'
+    },
+    actorStyle:{
+        marginTop:4,
+        paddingLeft:10,
+        flexDirection:'row'
+    },
+    cateStyle:{
+        marginTop:4,
+        paddingLeft:10,
+        flexDirection:'row'
+    },
+    yearStyle:{
+        marginTop:4,
+        paddingLeft:10,
+        flexDirection:'row'
+    },
+    desStyle:{
+        padding:10
+    },
+
+    contentViewStyle:{
+        // 设置主轴的方向
+        flexDirection:'row',
+        // 多个cell在同一行显示
+        flexWrap:'wrap',
+        // 宽度
+        width:width,
+        alignItems:'flex-start',
+    },
+    item_view:{
+        flex: 1,
+        marginLeft: 5,
+        marginRight: 5,
+    },
+    item: {
+        flex: 1,
+        marginLeft: 5,
+        borderWidth: 1,
+        borderColor: '#e9e9e9',
+        marginRight: 5,
+        height: 30,
+        borderRadius:3,
+        backgroundColor:'#f9f9f9'
+    },
+
+    item_text: {
+
+        color: '#262626',
+        height: 20,
+        lineHeight: 18,
+        textAlign: 'center',
+        marginTop: 5,
+    },
+
 
 
 
