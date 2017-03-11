@@ -300,10 +300,6 @@ export default class VideoPlayer extends Component {
                     });
                 }
 
-
-
-
-
             }
         ).catch(
             (err) => {

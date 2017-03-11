@@ -15,11 +15,13 @@ import {
     Image,
     Platform,   // 判断当前运行的系统
     Navigator,
-    ScrollView
+    ScrollView,
+    TouchableOpacity
 } from 'react-native';
 
 import Dimensions from'Dimensions';
 import CateView from'./CateView.js'
+import VideoDetail from '../VideoDetail/VideoDetail';
 var {width} = Dimensions.get('window');
 
 
@@ -107,11 +109,23 @@ export default class AdHeader extends Component{
         for(var i=0; i<imgsArr.length; i++){
             // 取出单独的每一个对象
             var imgItem = imgsArr[i];
-            // console.log(imgItem);
+            imgItem.id = imgItem.vod_id;
             // debugger;
             // 创建组件装入数组
             allImage.push(
-                <Image key={i} source={{uri: imgItem.pic}} style={{width:width, height:140}}/>
+                <TouchableOpacity key={i} activeOpacity={1} onPress={()=>{
+                    const { navigator } = this.props;
+
+                    if (navigator) {
+                        navigator.push({
+                            name: '详情页面',
+                            component: VideoDetail,
+                            params:imgItem
+                        })
+                    }
+                } }>
+                    <Image key={i} source={{uri: imgItem.pic}} style={{width:width, height:140}}/>
+                </TouchableOpacity>
             );
         }
         // 返回数组

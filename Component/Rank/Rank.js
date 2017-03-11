@@ -94,9 +94,6 @@ class VideoList extends Component {
 
   
 
-    static defaultProps ={
-        api_url:'http://api.fffml.com/top'
-    };
 
     constructor(props){
         super(props);

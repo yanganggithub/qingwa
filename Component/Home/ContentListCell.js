@@ -15,10 +15,13 @@ import {
     Image,
     Platform,   // 判断当前运行的系统
     Navigator,
-    ListView
+    ListView,
+    TouchableOpacity
+
 } from 'react-native';
 
 import Dimensions from'Dimensions';
+import VideoDetail from '../VideoDetail/VideoDetail'
 var {width} = Dimensions.get('window');
 
 
@@ -36,7 +39,6 @@ export default class ContentLIstCell extends Component{
 
     constructor(props){
         super(props);
-        console.log(this.props.dataArr);
         var ds = new ListView.DataSource({rowHasChanged:(row1, row2) => row1 !== row2});
        this.state = {dataSource:ds.cloneWithRows(this.props.dataArr)};
     }
@@ -58,17 +60,28 @@ export default class ContentLIstCell extends Component{
    // 具体的cell
     renderRow(rowdata){
         return(
+            <TouchableOpacity activeOpacity={1} onPress={()=>{
+                const { navigator } = this.props;
 
-            <View style={styles.cellStyle}>
-                <Image source={{uri: rowdata.pic}} style={{width:imgW, height:imgH}}/>
-                <View style={styles.titleStyle}>
-                    <Text style={{fontSize:12,color:'#ffffff'}}>{rowdata.title+' '}</Text>
-                </View>
-                <View style={styles.bottomViewStyle}>
-                    <Text style={{fontSize:13,textAlign: 'center',color:'#262626'}}>{rowdata.name}</Text>
-                </View>
+                if (navigator) {
+                    navigator.push({
+                        name: '详情页面',
+                        component: VideoDetail,
+                        params:rowdata
+                    })
+                }
+            } }>
+                <View style={styles.cellStyle}>
+                    <Image source={{uri: rowdata.pic}} style={{width:imgW, height:imgH}}/>
+                    <View style={styles.titleStyle}>
+                        <Text style={{fontSize:12,color:'#ffffff'}}>{rowdata.title+' '}</Text>
+                    </View>
+                    <View style={styles.bottomViewStyle}>
+                        <Text style={{fontSize:13,textAlign: 'center',color:'#262626'}}>{rowdata.name}</Text>
+                    </View>
 
-            </View>
+                </View>
+            </TouchableOpacity>
 
         );
     }

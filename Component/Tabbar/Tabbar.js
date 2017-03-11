@@ -43,8 +43,6 @@ export default class Tabbar extends Component{
         return   (
         <TabNavigator tabBarStyle={styles.tabStyle}>
             {/*--首页--*/}
-
-
             {this.renderTabBarItem('首页', 'tab_home', 'tab_home_current','home', '首页', Home)}
             {/*--商家--*/}
             {this.renderTabBarItem('频道', 'tab_type', 'tab_type_current','channel', '频道', Channel)}

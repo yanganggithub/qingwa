@@ -51,7 +51,7 @@ export default class Home extends Component{
     }
 
     render() {
-        console.log(height);
+
 
 
         return (
@@ -138,7 +138,7 @@ export default class Home extends Component{
         return(
             <View >
                <View style={styles.topStyle}></View>
-               <ContentListCell dataArr={rowData}></ContentListCell>
+               <ContentListCell dataArr={rowData} navigator={this.props.navigator}></ContentListCell>
             </View>
         );
     }
@@ -150,6 +150,7 @@ export default class Home extends Component{
 
         return(
             <AdHeader
+                navigator={this.props.navigator}
                 imageDataArr = {this.state.headerDataArr}
             />
         );
