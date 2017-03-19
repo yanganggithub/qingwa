@@ -92,9 +92,6 @@ export default class Rank extends Component{
 
 class VideoList extends Component {
 
-  
-
-
     constructor(props){
         super(props);
 

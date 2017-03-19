@@ -21,12 +21,12 @@ import Main from './Component/Main/Main'
 import codePush from "react-native-code-push";
 
 
-  global.console = {
-    info: () => {},
-    log: () => {},
-    warn: () => {},
-    error: () => {},
-  };
+  // global.console = {
+  //   info: () => {},
+  //   log: () => {},
+  //   warn: () => {},
+  //   error: () => {},
+  // };
 
 
 

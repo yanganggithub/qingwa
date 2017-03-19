@@ -22,6 +22,7 @@ import {
 
 } from 'react-native';
 
+import Loading from 'react-native-loading-w';
 
 
 import AdHeader from '../Home/AdHeader';
@@ -58,12 +59,12 @@ export default class Home extends Component{
         <View style={styles.container}>
 
 
+            <Loading ref={'loading'} text={'Loading...'} />
 
             {/*导航*/}
             {this.renderNavBar()}
 
             <ListView
-                style={styles.listStyle}
                 dataSource={this.state.dataSource}
                 renderRow={this.renderRow.bind(this)}
                 renderHeader={this.renderHeader.bind(this)}
@@ -73,18 +74,15 @@ export default class Home extends Component{
         );
     }
 
-    async _onReadyAsync({data: {children: stories}}) {
-        return new Promise((resolve) => {
-            this.setState({stories}, resolve);
-        });
-    }
-
     getLoading() {
         return this.refs['loading'];
     }
 
+
+
     // 请求网络数据
     componentDidMount(){
+        this.getLoading().show();
         this.loadDataFromNet();
     }
 
@@ -94,6 +92,7 @@ export default class Home extends Component{
             .then((response)=>response.json())
             .then((responseData)=>{
                 // 拿到所有的数据
+                this.getLoading().dismiss();
                 var jsonData = responseData['data'];
                 // 处理网络数据
                 this.dealWithData(jsonData);
@@ -103,6 +102,7 @@ export default class Home extends Component{
             })
             .catch((error)=>{
                 console.log(error);
+                this.getLoading().dismiss();
                 this.setState({
                     visible: !this.state.visible
                 });
