@@ -1,11 +1,6 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * Created by yangang on 17/3/22.
  */
-
-// npm install
-
 import React, { Component } from 'react';
 import {
     AppRegistry,
@@ -18,19 +13,19 @@ import {
 } from 'react-native';
 
 
-export default class Me extends Component{
+export default class SearchDetail extends Component{
     constructor(props){
         super(props);
-     
+
     }
 
     render() {
         return (
-           <View></View>
+            <View></View>
         );
     }
 
-   
+
 }
 
 const styles = StyleSheet.create({
@@ -50,5 +45,3 @@ const styles = StyleSheet.create({
         color:'orange'
     }
 });
-
-

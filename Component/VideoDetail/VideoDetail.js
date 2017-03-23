@@ -656,12 +656,41 @@ class BriefList extends Component {
 class SeriesList extends Component {
     constructor(props) {
         super(props);
+       
+        let dataArr = [];
+        let count =  this.props.data.length;
+        for (let i in this.props.data) {
+            if (i % 4 ===0 ){
+                let arr4 =[];
+                if(parseInt(i) <= count - 1){
+                    data1 = this.props.data[parseInt(i)];
+                }
+                if(parseInt(i) + 1 <= count - 1){
+                    data2 = this.props.data[parseInt(i) + 1];
+                }
+
+                if(parseInt(i) + 2 <= count - 1){
+                    data3 = this.props.data[parseInt(i) + 2];
+                }
+
+                if(parseInt(i) + 3 <= count - 1){
+                    data4 =  this.props.data[parseInt(i) + 3];
+                }
+                arr4.push(data1);
+                arr4.push(data2);
+                arr4.push(data3);
+                arr4.push(data4);
+                dataArr.push(arr4);
+            }
+        }
 
         this.state = {
             scrollVar:false,
-
+            // cell的数据源
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (r1, r2) => r1 !== r2
+            }).cloneWithRows(dataArr)
         }
-
     }
 
     makeScroll(){
@@ -678,19 +707,12 @@ class SeriesList extends Component {
         });
     }
 
-
     render(){
-
         let list = [];
-        console.log('render',this.props.data);
-        console.log('redner1',this.props.data[0]);
-        console.log('rednerplay',this.props.data[0].play_name);
+
         let count =  this.props.data.length;
         for (let i in this.props.data) {
-
-
            console.log('i:',i);
-
             if (i % 4 === 0) {
                 //两个等号 ：不判断类型
                 let string1 = "未知";
@@ -717,9 +739,6 @@ class SeriesList extends Component {
                 let boolVar3 = string3 == "未知" ? false : true;
                 let boolVar4 = string4 == "未知" ? false : true;
                 console.log('boolVar:',boolVar1);
-
-
-
                 let row = (
                     <View style={styles.row} key={i}>
 
@@ -729,51 +748,79 @@ class SeriesList extends Component {
 
                             ></Item>
 
-
-
                         <Item play_name={string2}
                               show={boolVar2}
                               press={this.press.bind(this, this.props.data[i + 1]) }
                         ></Item>
-
-
 
                         <Item play_name={string3}
                               show={boolVar3}
                               press={this.press.bind(this, this.props.data[i + 2]) }
                         ></Item>
 
-
                         <Item play_name={string4}
                               show={boolVar4}
                               press={this.press.bind(this, this.props.data[i + 3]) }
                         ></Item>
-
-
-
-
-
                     </View>
-
 
                 );
                 list.push(row);
 
             }
         }
-        return (
-            <ScrollView style={{ marginTop: 10 }}>
-                {list}
+        // return (
+        //     <ScrollView style={{ marginTop: 10 }}>
+        //         {list}
+        //
+        //     </ScrollView>
+        // );
+        return(
+            <ListView
+                dataSource={this.state.dataSource}
+                renderRow={this.renderRow.bind(this)}
+            />
 
-            </ScrollView>
         );
     }
+    renderRow(data){
+
+        let boolVar1 = data[0] ? true : false;
+        let boolVar2 = data[1]  ? true : false;
+        let boolVar3 = data[2]  ? true : false;
+        let boolVar4 = data[3] ? true : false;
+        
+        let row = (
+            <View style={styles.row} >
+
+                <Item play_name={data[0].play_name}
+                      show={boolVar1}
+                      press={this.press.bind(this, data[0]) }
+
+                ></Item>
+
+                <Item play_name={data[1].play_name}
+                      show={boolVar2}
+                      press={this.press.bind(this, data[1]) }
+                ></Item>
+
+                <Item play_name={data[2].play_name}
+                      show={boolVar3}
+                      press={this.press.bind(this, data[2]) }
+                ></Item>
+
+                <Item play_name={data[3].play_name}
+                      show={boolVar4}
+                      press={this.press.bind(this, data[3]) }
+                ></Item>
+            </View>
+
+        );
+        return row;
+    }
+
 
     press(data) {
-
-
-
-
         const { navigator } = this.props;
 
         if (navigator) {
@@ -805,10 +852,7 @@ class Item extends Component {
                 <View style={styles.item}>
                     <TouchableOpacity onPress={this.props.press}>
 
-
                         <Text numberOfLines={1} style={styles.item_text}>{this.props.play_name}</Text>
-
-
                     </TouchableOpacity>
                 </View>
             );
@@ -936,10 +980,9 @@ const styles = StyleSheet.create({
     },
     row: {
         alignItems: 'center',
-
         flex: 1,
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: 5,
     },
     rowTitle: {
         flex: 1,
@@ -1054,9 +1097,10 @@ const styles = StyleSheet.create({
     item: {
         flex: 1,
         marginLeft: 5,
+        marginRight: 5,
+        marginTop:5,
         borderWidth: 1,
         borderColor: '#e9e9e9',
-        marginRight: 5,
         height: 30,
         borderRadius:3,
         backgroundColor:'#f9f9f9'

@@ -37,9 +37,6 @@ import {PullList} from 'react-native-pull';
 export default class Rank extends Component{
     constructor(props){
         super(props);
-
-
-     
     }
 
     render() {
@@ -59,7 +56,6 @@ export default class Rank extends Component{
                     <VideoList tabLabel="电视剧" type="2" navigator={this.props.navigator}/>
                     <VideoList tabLabel="综艺" type="4" navigator={this.props.navigator}/>
                     <VideoList tabLabel="动漫" type="3" navigator={this.props.navigator}/>
-
                    
                 </ScrollableTabView>
             </View>

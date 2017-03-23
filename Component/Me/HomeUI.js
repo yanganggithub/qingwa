@@ -311,9 +311,6 @@ class List extends Component {
             return v.toString(16);
         }).toUpperCase();
 
-
-
-
     }
 
 
@@ -337,15 +334,6 @@ class List extends Component {
         );
     }
 
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -358,8 +346,6 @@ class GouWu extends Component {
             data: [],
         };
     }
-
-
 
     render() {
 

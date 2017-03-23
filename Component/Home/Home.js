@@ -18,20 +18,18 @@ import {
     Navigator,
     Platform,
 
-
-
 } from 'react-native';
 
-import Loading from 'react-native-loading-w';
+
 
 
 import AdHeader from '../Home/AdHeader';
 import ContentListCell from '../Home/ContentListCell'
+import Search from '../Search/Search'
+import  LoaderActivity from '../Common/LoaderActivity';
 
 import Dimensions from'Dimensions';
 var {width,height} = Dimensions.get('window');
-
-
 
 
 export default class Home extends Component{
@@ -41,8 +39,6 @@ export default class Home extends Component{
 
         this.state = {
              headerDataArr: [],
-
-
             // cell的数据源
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2
@@ -57,10 +53,7 @@ export default class Home extends Component{
 
         return (
         <View style={styles.container}>
-
-
-            <Loading ref={'loading'} text={'Loading...'} />
-
+            <LoaderActivity ref={'loading'}/>
             {/*导航*/}
             {this.renderNavBar()}
 
@@ -74,15 +67,13 @@ export default class Home extends Component{
         );
     }
 
-    getLoading() {
-        return this.refs['loading'];
-    }
+
 
 
 
     // 请求网络数据
     componentDidMount(){
-        this.getLoading().show();
+        this.refs['loading'].show();
         this.loadDataFromNet();
     }
 
@@ -92,7 +83,7 @@ export default class Home extends Component{
             .then((response)=>response.json())
             .then((responseData)=>{
                 // 拿到所有的数据
-                this.getLoading().dismiss();
+                this.refs['loading'].dismiss();
                 var jsonData = responseData['data'];
                 // 处理网络数据
                 this.dealWithData(jsonData);
@@ -160,7 +151,19 @@ export default class Home extends Component{
     renderNavBar(){
         return(
             <View style={styles.navOutViewStyle}>
-                <TouchableOpacity  style={styles.leftViewStyle}>
+                <TouchableOpacity  style={styles.leftViewStyle} onPress={
+                    ()=>{
+                        const { navigator } = this.props;
+
+                        if (navigator) {
+                            navigator.push({
+                                name: '详情页面',
+                                component: Search,
+                                params:null
+                            })
+                        }
+                    }
+                }>
                     <Image source={{uri: 'nav_search'}} style={styles.navImageStyle}/>
                 </TouchableOpacity>
                 <View style={styles.txtStyle}>

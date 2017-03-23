@@ -129,9 +129,6 @@ export default class Channel extends Component{
                     data4 =  this.state.hotData[parseInt(i) + 3];
                 }
 
-
-
-
                 let row = (
                     <View style={styles.row} key={i}>
 
@@ -140,18 +137,13 @@ export default class Channel extends Component{
 
                         ></HotItem>
 
-
-
                         <HotItem data = {data2}
                                  press={this.press.bind(this, data2) }
                         ></HotItem>
 
-
-
                         <HotItem data = {data3}
                                  press={this.press.bind(this, data3) }
                         ></HotItem>
-
 
                         <HotItem data = {data4}
                                  press={this.press.bind(this, data4) }
@@ -287,17 +279,17 @@ class CateItem extends Component{
 
 
             return (
-                <View style={[styles.item, {backgroundColor:this.props.viewColor}]}>
+                <View  style={[styles.cateItem, {backgroundColor:this.props.viewColor}]}>
 
                     <TouchableOpacity onPress={this.props.press}>
 
-                        <Text  style={{color:'white',fontSize:30}}>{this.props.data.id}</Text>
-                        <View style={{marginTop: 5,alignItems:'center'}}>
-                            <Text  style={{color:'white',fontSize:12}}>{this.props.data.total}</Text>
-                        </View>
-
-                        <Image  source={{uri: this.props.data.bg}} style={{position:'absolute',width:imgW, height:imgH}}>
-
+                        <Image  source={{uri: this.props.data.bg}}  style={{position:'absolute',left:0,top:0,width:imgW, height:imgH}}>
+                          <View style={styles.item}>
+                            <Text  style={{color:'white',fontSize:30,backgroundColor: 'transparent'}}>{this.props.data.id}</Text>
+                            <View style={{marginTop: 5,alignItems:'center'}}>
+                                <Text  style={{color:'white',fontSize:12,backgroundColor: 'transparent',}}>{this.props.data.total}</Text>
+                            </View>
+                          </View>
                         </Image>
                     </TouchableOpacity>
 
@@ -323,10 +315,9 @@ class HotItem extends Component {
             <View style={styles.hotItem}>
                 <TouchableOpacity onPress={this.props.press}>
 
-                    <Image  source={{uri: this.props.data.pic}} style={{width:hotW, height:hotH}}>
+                    <Image  source={{uri: this.props.data.pic}} resizeMode='contain' style={{width:hotW, height:hotH}}>
 
                     </Image>
-
 
                     <View style={{marginTop: 5,alignItems:'center'}}>
                         <Text  style={{color:'rgba(38,38,38,1.0)',fontSize:14}}>{this.props.data.name}</Text>
@@ -375,6 +366,10 @@ const styles = StyleSheet.create({
     row: {
         flex: 1,
         flexDirection: 'row',
+    },
+    cateItem:{
+        flex: 1,
+        height: imgH,
     },
 
     item: {
