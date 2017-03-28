@@ -63,13 +63,11 @@ export default class Channel extends Component{
 
                     </CateItem>
 
-
                     <CateItem data={this.state.cateData[1]}
                               viewColor='rgba(23,124,205,1)'
                               press={this.press.bind(this, this.state.cateData[1]) }
 
                     >
-
                     </CateItem>
 
                 </View>
@@ -271,11 +269,6 @@ class CateItem extends Component{
     }
     
     render() {
-
-        console.log(this.props.data.id);
-        console.log(this.props.data.bg);
-        console.log('color:',this.props.viewColor);
-
 
 
             return (

@@ -19,7 +19,8 @@ import {
     Modal,
     TouchableOpacity,
     ScrollView,
-    PixelRatio
+    PixelRatio,
+    AsyncStorage,
 } from 'react-native';
 
 
@@ -38,6 +39,13 @@ var scrollGlobalVar = false;
 export default class VideoDetail extends Component{
     constructor(props){
         super(props);
+        this.information = {
+            id:1,
+            name:'',
+            pic:'',
+            title:'',
+        }
+
         this.state = {
             scrollVar:true,
             headerDataDic:null,
@@ -385,8 +393,13 @@ export default class VideoDetail extends Component{
             (responseData)=>{
                 console.log(responseData);
 
+                this.information.pic = responseData['data']['pic'];
+                this.information.name = responseData['data']['name'];
+                this.information.title = responseData['data']['gold'];
                 // 处理网络数据
                 this.dealWithData(responseData);
+
+                //
             }
         ).catch(
             (err) => {
@@ -430,11 +443,32 @@ export default class VideoDetail extends Component{
                     <Text style={{color:'white', fontSize:18, fontWeight:'bold'}}>咕噜影院</Text>
                 </View>
 
-                <TouchableOpacity onPress={()=>{alert('点了!')}} style={styles.rightViewStyle}>
+                <TouchableOpacity onPress={()=>{
+
+                    AsyncStorage.setItem('SP-' + this.genId() + '-SP',  JSON.stringify(this.information), function (err) {
+                        if (err) {
+                            alert(err);
+                        } else {
+                            alert('保存成功');
+                        }
+                    });
+
+                }} style={styles.rightViewStyle}>
                     <Image source={{uri: 'nav_share'}} style={styles.navImageStyle}/>
                 </TouchableOpacity>
             </View>
         )
+    }
+
+    // 生成随机ID：GUID 全局唯一标识符（GUID，Globally Unique Identifier）是一种由算法生成的二进制长度为128位的数字标识符
+    // GUID生成的代码来自于Stoyan Stefanov
+
+    genId() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        }).toUpperCase();
+
     }
 
 

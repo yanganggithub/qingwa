@@ -93,7 +93,7 @@ export default class Home extends Component{
             })
             .catch((error)=>{
                 console.log(error);
-                this.getLoading().dismiss();
+                this.refs['loading'].dismiss();
                 this.setState({
                     visible: !this.state.visible
                 });

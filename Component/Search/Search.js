@@ -59,9 +59,25 @@ export default class Search extends Component{
 
     renderRow(data){
         return (
+            <TouchableOpacity activeOpacity={1} onPress={
+                ()=> {
+                    const {navigator} = this.props;
+                    if (navigator) {
+                        navigator.push({
+                            name: '详情页面',
+                            component: SearchDetail,
+                            params: {text: data}
+                        })
+                    }
+                }
+            }
+
+
+            >
                 <View>
                     <Text>{data}</Text>
                  </View>
+            </TouchableOpacity>
         );
 
     }
@@ -119,8 +135,6 @@ export default class Search extends Component{
         })
     }
 
-
-
     // 首页的导航条
     renderNavBar(){
         return(
@@ -140,7 +154,18 @@ export default class Search extends Component{
                                                         } else {
                                                             alert('保存成功');
                                                         }
-                                                    })
+                                                    });
+
+                                                    const { navigator } = this.props;
+
+                                                    if (navigator) {
+                                                        navigator.push({
+                                                            name: '详情页面',
+                                                            component: SearchDetail,
+                                                            params:{text:event.nativeEvent.text}
+                                                        })
+                                                    }
+
                                                 }
                                     }
                 />
@@ -153,27 +178,6 @@ export default class Search extends Component{
             </View>
         )
     }
-
-
-
-
-
-
-
-
-    // {/*const { navigator } = this.props;*/}
-    //
-    // {/*if (navigator) {*/}
-    // {/*navigator.push({*/}
-    // {/*name: '详情页面',*/}
-    // {/*component: SearchDetail,*/}
-    // {/*params:{*/}
-    // {/*text:null*/}
-    // {/*}*/}
-    // {/*})*/}
-    // {/*}*/}
-    //
-    // {/*}}*/}
 
     // 生成随机ID：GUID 全局唯一标识符（GUID，Globally Unique Identifier）是一种由算法生成的二进制长度为128位的数字标识符
     // GUID生成的代码来自于Stoyan Stefanov

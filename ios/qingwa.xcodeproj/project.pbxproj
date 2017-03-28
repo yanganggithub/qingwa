@@ -257,6 +257,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTOrientation;
 		};
+		B43CD6B21E83941600A3A4E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4AC864C0C2784E7DBDD5FF60 /* RNVectorIcons.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B43CD6931E83912200A3A4E3;
+			remoteInfo = "RNVectorIcons copy";
+		};
 		B46C0A7C1E724E1B0044A710 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F1E484AE16E44068867E29A4 /* CodePush.xcodeproj */;
@@ -593,6 +600,7 @@
 			isa = PBXGroup;
 			children = (
 				B46DF3031E6D285700CF32A1 /* libRNVectorIcons.a */,
+				B43CD6B31E83941600A3A4E3 /* libRNVectorIcons copy.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -988,6 +996,13 @@
 			fileType = archive.ar;
 			path = libRCTOrientation.a;
 			remoteRef = B42120761E6C00D60037A55D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B43CD6B31E83941600A3A4E3 /* libRNVectorIcons copy.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRNVectorIcons copy.a";
+			remoteRef = B43CD6B21E83941600A3A4E3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		B46C0A7D1E724E1B0044A710 /* libCodePush.a */ = {
