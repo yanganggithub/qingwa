@@ -19,7 +19,17 @@ import {
     AsyncStorage,
     ListView,
 } from 'react-native';
+import Dimensions from'Dimensions';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
+import VideoDetail from '../VideoDetail/VideoDetail';
+var {width} = Dimensions.get('window');
+
+var cols = 3;
+var space = 8;
+var imgW = (width - (cols + 1) * space)/cols;
+var imgH =  (152.0/114.0 )*imgW;
+var cellW = imgW;
+var cellH = imgH + 44;
 
 export default class Me extends Component{
     constructor(props){
@@ -80,6 +90,20 @@ class WatchList extends Component {
             }),
         };
     }
+
+    render(){
+        return(
+            <ListView
+                dataSource={this.state.dataSource}
+                renderRow={this.renderRow.bind(this)}
+            />
+        );
+
+    }
+
+    renderRow(data) {
+        return <View><Text>hello</Text></View>
+    }
 }
 
 class FavouriteList extends Component {
@@ -95,57 +119,130 @@ class FavouriteList extends Component {
         };
     }
 
-    componentDidMount() {
-        let _that = this;
-        AsyncStorage.getAllKeys(
-            function (err, keys) {
-                if (err) {
-                    //TODO 存储数据出错
-                    //return ;
-                }
-                //keys是字符串数组
-                AsyncStorage.multiGet(keys, function (err, result) {
-                    //得到的结构是二维数组
-                    //result[i][0]表示我们存储的键   result[i][1]表示我们存储的值
-                    console.log("result:",result);
-                    let arr = [];
-                    for (let i in result) {
-                        let obj = JSON.parse(result[i][1]);
-                        if (obj.hasOwnProperty(id)){
-                            arr.push(result[i][1]);
-                        }
-
-
-                    }
-
-                    _that.setState(
-                        {
-                            dataSource :_that.state.dataSource.cloneWithRows(arr)
-                        }
-                    );
-
-
-                });
-            }
+    render(){
+        return(
+            <ListView
+                dataSource={this.state.dataSource}
+                renderRow={this.renderRow.bind(this)}
+                contentContainerStyle={styles.contentViewStyle}
+            />
         );
+
+    }
+
+    // 具体的cell
+    renderRow(rowdata){
+        console.log('rowdata:',rowdata);
+        return(
+            <TouchableOpacity activeOpacity={1} onPress={()=>{
+                const { navigator } = this.props;
+
+                if (navigator) {
+                    navigator.push({
+                        name: '详情页面',
+                        component: VideoDetail,
+                        params:rowdata
+                    })
+                }
+            } }>
+                <View style={styles.cellStyle}>
+                    <Image source={{uri: rowdata.pic}} style={{width:imgW, height:imgH}}/>
+                    <View style={styles.titleStyle}>
+                        <Text style={{fontSize:12,color:'#ffffff'}}>{rowdata.title+' '}</Text>
+                    </View>
+                    <View style={styles.bottomViewStyle}>
+                        <Text style={{fontSize:13,textAlign: 'center',color:'#262626'}}>{rowdata.name}</Text>
+                    </View>
+
+                </View>
+            </TouchableOpacity>
+
+        );
+    }
+
+    componentDidMount() {
+        AsyncStorage.getItem('FAVOURITE',(error,historyString)=> {
+            if (historyString) {
+                console.log('history:',historyString);
+               this.setState({
+                   dataSource :this.state.dataSource.cloneWithRows(JSON.parse(historyString))
+               });
+            }
+        });
+
     }
 }
 const styles = StyleSheet.create({
-    iconStyle:{
-        width: Platform.OS === 'ios' ? 30 : 25,
-        height:Platform.OS === 'ios' ? 30 : 25
+    container:{
+        flex:1,
     },
-    backgroundVideo: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
+    navOutViewStyle:{
+        height: Platform.OS == 'ios' ? 64 : 44,
+        backgroundColor:'rgba(17,17,17,1.0)',
+
+        // 设置主轴的方向
+        flexDirection:'row',
+
+        // 主轴方向居中
+        justifyContent:'center'
+    },
+    leftViewStyle:{
+        // 绝对定位
+        position:'absolute',
+        left:10,
+        bottom:Platform.OS == 'ios' ? 15:13
     },
 
-    selectedTitleStyle:{
-        color:'orange'
+    navImageStyle:{
+        width:Platform.OS == 'ios' ? 24: 24,
+        height:Platform.OS == 'ios' ? 24: 24,
+    },
+
+    rightViewStyle:{
+        // 绝对定位
+        position:'absolute',
+        right:10,
+        bottom:Platform.OS == 'ios' ? 15:13
+    },
+    txtStyle:{
+        marginTop:Platform.OS == 'ios' ? 30 : 10
+
+    },
+    topStyle:{
+        height:10,
+        backgroundColor:'rgba(237,237,237,1.0)'
+    },
+    contentViewStyle:{
+        // 设置主轴的方向
+        flexDirection:'row',
+        // 多个cell在同一行显示
+        flexWrap:'wrap',
+        // 宽度
+        width:width,
+        alignItems:'flex-start'
+    },
+
+    cellStyle:{
+        width:cellW,
+        height:cellH,
+        // 水平居中和垂直居中
+        justifyContent:'center',
+        alignItems:'center',
+        marginLeft:space
+    },
+    headerStyle:{
+        marginLeft:12,
+        width:width,
+        height:44,
+        justifyContent:'center'
+    },
+    bottomViewStyle:{
+        height:44,
+        justifyContent:'center',
+        alignItems:'center',
+
     }
+
 });
 
 

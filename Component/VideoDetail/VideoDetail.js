@@ -209,7 +209,6 @@ export default class VideoDetail extends Component{
 
     scrollEnd(e){
 
-
         var offset =  e.nativeEvent.contentOffset.y;
         console.log("offset=",offset);
         if (offset>=headerHeight){
@@ -445,14 +444,41 @@ export default class VideoDetail extends Component{
 
                 <TouchableOpacity onPress={()=>{
 
-                    AsyncStorage.setItem('SP-' + this.genId() + '-SP',  JSON.stringify(this.information), function (err) {
-                        if (err) {
-                            alert(err);
-                        } else {
-                            alert('保存成功');
-                        }
-                    });
+                    AsyncStorage.getItem('FAVOURITE',(error,arrString)=>{
+                        let historyArr = [];
 
+                        if (arrString) {
+                            historyArr = JSON.parse(arrString);
+                        }
+
+                        if (historyArr.length < 10){
+
+                            let find = false;
+                            for (let obj in historyArr){
+                                if (obj.id === this.information.id){
+                                    find = true;
+                                    break;
+                                }
+                            }
+
+                            if (!find){
+                                historyArr.push(this.information);
+                            }
+
+                        }else {
+                            historyArr.shift();
+                            historyArr.push(this.information);
+                        }
+
+                        AsyncStorage.setItem('FAVOURITE',  JSON.stringify(historyArr), function (err) {
+                            if (err) {
+                                alert(err);
+                            } else {
+                                alert('保存成功');
+                            }
+                        });
+
+                    });
                 }} style={styles.rightViewStyle}>
                     <Image source={{uri: 'nav_share'}} style={styles.navImageStyle}/>
                 </TouchableOpacity>
